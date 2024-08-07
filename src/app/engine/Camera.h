@@ -9,7 +9,7 @@
 #include <cstdint>
 #include "DynamicObject.h"
 
-class Camera : public DynamicObject {
+class Camera/* : public DynamicObject*/ {
 private:
     uint16_t x_size;
     uint16_t y_size;

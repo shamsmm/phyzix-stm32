@@ -15,12 +15,12 @@ class Application {
 private:
     static Scene * scene;
     static Camera * camera;
-    static uint32_t last_update;
+    static uint32_t last_tick;
 
     Application() {
         scene = nullptr;
         camera = nullptr;
-        last_update = Tick;
+        last_tick = Tick;
     };
 
 public:
@@ -33,39 +33,11 @@ public:
     Application(Application const&) = delete;
     void operator = (Application const&) = delete;
 
-    [[noreturn]] static void update() {
-        if (!scene)
-            os_schedule();
+    [[noreturn]] static void update();
 
-        while (true);
-    }
+    [[noreturn]] static void render();
 
-    [[noreturn]] static void render() {
-        while (true) {
-            if (scene && camera) {
-                scene->drawAllDrawables();
-            }
-
-            os_schedule();
-        }
-    }
-
-    [[noreturn]] static void game() {
-        ST7735_WriteString(0, 18 + 1, "HEllo", Font_11x18, RED,BLACK);
-        // TODO: move logic to other class or something
-
-        if (!scene) {
-            // Beginning scene
-            scene = new Scene(160, 256);
-            camera = new Camera(160, 128);
-            ST7735_WriteString(0, 18 + 1, "HEllo2222", Font_11x18, RED,BLACK);
-            scene->addDrawable(new StaticObject([] {
-                ST7735_WriteString(0, 18 + 1, "ZZZZZZZZ", Font_11x18, BLUE,BLACK);
-            }));
-        }
-
-        while (true);
-    }
+    [[noreturn]] static void game();
 };
 
 #endif //C0_APPLICATION_H

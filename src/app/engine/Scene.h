@@ -44,9 +44,22 @@ public:
         drawables[drawableCount++] = drawable;
     }
 
-    void drawAllDrawables() const {
+    void removeDrawable(Drawable* drawable) {
         for (size_t i = 0; i < drawableCount; ++i) {
-            drawables[i]->draw();
+            if (drawables[i] == drawable) {
+                // Shift remaining elements to the left
+                for (size_t j = i; j < drawableCount - 1; ++j) {
+                    drawables[j] = drawables[j + 1];
+                }
+                --drawableCount;
+                break;
+            }
+        }
+    }
+
+    void forEachDrawable(void (* func)(Drawable*)) {
+        for (size_t i = 0; i < drawableCount; ++i) {
+            func(drawables[i]);
         }
     }
 };

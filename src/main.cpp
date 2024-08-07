@@ -53,13 +53,9 @@ void App_Configure_Hardware() {
     // Enable various faults
     system_faults_configure();
 
-    // Enable Systick
-#if defined(SYSTICK_CLKSOURCE_EXTERNAL)
-    SysTickReloadValue = 8000; // Clock source is external 8MHz
-#elif defined(SYSTICK_CLKSOURCE_INTERNAL)
+    // Enable Systick with one Tick every 10ms
     SysTickControlAndStatus->CLKSOURCE = 1;
     SysTickReloadValue = 640000; // Clock source is AHB which is 64MHz
-#endif
     SysTickControlAndStatus->TICKINT = 1;
     SysTickControlAndStatus->ENABLE = 1;
 
@@ -87,6 +83,6 @@ void App_Configure_Hardware() {
     App_SPI_Configure_Hardware();
 
     // Initialize screen
-    ST7735_Init(0);
+    ST7735_Init(2);
     fillScreen(BLACK);
 }
