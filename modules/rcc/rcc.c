@@ -14,7 +14,7 @@
 
 #define FLASH_INTERFACE (unsigned long *) 0x40022000
 
-void RCC_Clocks_Enable(struct ClockConfigurationTypeDef conf) {
+void RCC_Clocks_Enable(ClockConfigurationTypeDef conf) {
     *(RCC + conf.offset) |= conf.value;
 }
 

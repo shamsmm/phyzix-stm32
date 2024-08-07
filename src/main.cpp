@@ -8,83 +8,45 @@
 #include "os/os.h"
 #include "system/system.h"
 #include "main.h"
+#include "spi/spi.h"
+#include "app/Application.h"
 
+_Alignas(8) uint32_t update_task_stack[0x200];
+_Alignas(8) uint32_t render_task_stack[0x200];
+_Alignas(8) uint32_t game_task_stack[0x200];
 
-_Alignas(8) uint32_t task1_stack[0x200];
-_Alignas(8) uint32_t task2_stack[0x200];
-_Alignas(8) uint32_t task3_stack[0x200];
-_Alignas(8) uint32_t task4_stack[0x200];
-
-
-void task1() {
-    uint16_t counter = 0;
-    char buffer[100];
-
-    while(1) {
-        sprintf(buffer, "T1: %05u", counter++);
-        ST7735_SetRotation(0);
-        ST7735_WriteString(0, 0, buffer, Font_11x18, RED,BLACK);
-        os_schedule();
-    }
-}
-
-void task2() {
-    uint16_t counter = 0;
-    char buffer[100];
-
-    while(1) {
-        counter++;
-        sprintf(buffer, "T2: %05u", counter++);
-        ST7735_SetRotation(0);
-        ST7735_WriteString(0, 18 + 1, buffer, Font_11x18, RED,BLACK);
-        os_schedule();
-    }
-}
-
-void task3() {
-    uint16_t counter = 0;
-    char buffer[100];
-
-    while(1) {
-        counter++;
-        counter++;
-        sprintf(buffer, "T3: %05u", counter++);
-        ST7735_SetRotation(0);
-        ST7735_WriteString(0, 18 * 2 + 1, buffer, Font_11x18, RED,BLACK);
-        os_schedule();
-    }
-}
-
-void task4() {
-    while(1) {
-        GPIO_WritePin(PC13, LOW);
-        delay(1000);
-        GPIO_WritePin(PC13, HIGH);
-        delay(1000);
-    }
-}
-
-void APP_Configure_Hardware();
+void App_Configure_Hardware();
 
 int main() {
-    APP_Configure_Hardware();
+    App_Configure_Hardware();
     printf("Hardware configured successfully.\n");
 
-    printf("OS initializing tasks...\n");
-    os_init_scheduler(&task1_stack[0x200 - 8]);
-    os_init_task_default(task1_stack, 0x200, task1, 0);
-    os_init_task_default(task2_stack, 0x200, task2, 1);
-    os_init_task_default(task3_stack, 0x200, task3, 2);
-    os_init_task_default(task4_stack, 0x200, task4, 3);
-    printf("OS initializing tasks done.\n");
+    delay(500);
+
+    printf("OS initializing threads...\n");
+    os_init_scheduler(&game_task_stack[0x200 - 8]);
+    os_init_task_default(update_task_stack, 0x200, Application::update, 2);
+    os_init_task_default(render_task_stack, 0x200, Application::render, 1);
+    os_init_task_default(game_task_stack, 0x200, Application::game, 0);
+    printf("OS initializing threads done.\n");
 
     printf("OS context switching to first task using svc call.\n");
-    __asm__ volatile ("svc %0" : : "I" (0));
+    SVC_CALL(0);
 
     return 0;
 }
 
-void APP_Configure_Hardware() {
+void App_SPI_Configure_Hardware() {
+    SPI1->CR1.MSTR = 1;
+    SPI1->CR1.BR = 0;
+    SPI1->CR1.BIDIMODE = 1;
+    SPI1->CR1.BIDIOE = 1;
+    SPI1->CR1.SSI = 1;
+    SPI1->CR1.SSM = 1;
+    SPI1->CR1.SPE = 1;
+}
+
+void App_Configure_Hardware() {
     // Use PLL for 128MHz clock
     RCC_PLL_System_Clock_Generic(PLL_Speed_128Mhz);
 
@@ -121,6 +83,8 @@ void APP_Configure_Hardware() {
 
     GPIO_PinMode(PA7, ALTERNATE);
     GPIO_PinMode(PA5, ALTERNATE);
+
+    App_SPI_Configure_Hardware();
 
     // Initialize screen
     ST7735_Init(0);

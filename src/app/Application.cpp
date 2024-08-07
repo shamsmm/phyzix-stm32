@@ -1,14 +1,6 @@
-//
-// Created by shams on 8/5/24.
-//
-
-#include <cstdio>
+#include "app/engine/Scene.h"
 #include "Application.h"
 
-void Application::test() {
-    printf("test");
-}
-
-Application::Application() {
-    printf("constructed!");
-}
+Scene * Application::scene;
+Camera * Application::camera;
+uint32_t Application::last_update;

@@ -20,6 +20,7 @@ SRC += $(wildcard src/*.cpp)
 
 # User defined added source files
 SRC += $(wildcard src/app/*.cpp)
+SRC += $(wildcard src/app/*/*.cpp)
 
 OBJ = $(SRC:.c=.o)
 OBJ := $(OBJ:.cpp=.o)

@@ -5,6 +5,7 @@
 #include "os/os.h"
 #include "uart/uart.h"
 #include "bluepill/bluepill.h"
+#include "lcd_st7735/lcd.h"
 
 int _getpid(void)
 {
@@ -49,6 +50,10 @@ int _write(int file, char *data, int len)
     OS_TASK_LOCK();
     for(int index=0; index<len; index++)
     {
+        char buffer[100];
+        strncpy(buffer, data, len < 100 ? len : 100);
+        ST7735_WriteString(0, 0, buffer, Font_7x10, RED, BLACK);
+
         if (data[index] == '\n')
         {
             UART_Transmit(USART1, '\r');

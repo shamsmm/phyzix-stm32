@@ -5,8 +5,9 @@
 extern "C" {
 #endif
 
-void system_faults_configure();
+#define SVC_CALL(n) __asm__ volatile ("svc %0" : : "I" (n))
 void system_svc_call(uint8_t);
+void system_faults_configure();
 
 #ifdef __cplusplus
 }
