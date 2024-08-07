@@ -21,7 +21,7 @@ int main() {
     App_Configure_Hardware();
     printf("Hardware configured successfully.\n");
 
-    delay(500);
+    delay(100);
 
     printf("OS initializing threads...\n");
     os_init_scheduler(&game_task_stack[0x200 - 8]);

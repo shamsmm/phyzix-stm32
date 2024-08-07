@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "app/engine/Scene.h"
 #include "Application.h"
 #include "lcd_st7735/graphics/gfx.h"
@@ -11,14 +12,14 @@ void Application::update() {
         if (scene) {
             scene->forEachDrawable([] (Drawable * d) {
                 if (auto * it = dynamic_cast<DynamicObject*>(d)) {
-                    float dt = Tick - last_tick; // in 10 millisecond ticks
+                    float dt = (Tick - last_tick) * 1; // in 10 millisecond ticks
 
                     it->x += it->v_x * dt;
                     it->y += it->v_y * dt;
                     it->v_x += it->a_x * dt;
                     it->v_y += it->a_y * dt;
-                    it->a_x = 0; // Or if movement going add value here
-                    it->a_y = -9.81 * 0.1 * 1 / 100; // 9.81 [m/s], 1 meter = 1 pixels, 1 second = 100 10ms
+                    it->a_x = it->axFunction(it->x, it->y, it->a_x, it->a_y);
+                    it->a_y = it->ayFunction(it->x, it->y, it->a_x, it->a_y);
                 }
             });
         }
@@ -59,13 +60,18 @@ void Application::game() {
         ST7735_FillRectangle(0, 0, 25,25,GREEN);
     }));
 
-    scene->addDrawable(
-    new DynamicObject([] (uint16_t x, uint16_t y) {
-                ST7735_FillRectangle(x, y, 25,25,GREEN);
-            },
-          70,
-          120
-    ));
+    DynamicObject * box = new DynamicObject([] (uint16_t x, uint16_t y) {
+                                                ST7735_FillRectangle(x, y, 25,25,GREEN);
+                                            },
+                                            5,120);
+    box->setAccelerationFunctions([](float x, float y, float v_x, float v_y) -> float {
+        return  0;
+    },[](float x, float y, float v_x, float v_y) -> float {
+        return  (-9.81 * 8 * 1 / 100 * 1 / 100);
+    });
+    box->v_x = 5 * 8 * 1 / 100;
+
+    scene->addDrawable(box);
 
     OS_TASK_UNLOCK();
 

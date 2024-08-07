@@ -19,6 +19,9 @@ public:
     float a_x = 0;
     float a_y = 0;
 
+    float (*axFunction)(float, float, float, float);
+    float (*ayFunction)(float, float, float, float);
+
     // Constructor takes a callable to implement the draw method
     DynamicObject( void (*drawFunction)(uint16_t, uint16_t), uint16_t x, uint16_t y)
             : drawFunction(drawFunction), x(x), y(y) {}
@@ -26,6 +29,11 @@ public:
     // Override the draw method from the base class
     void draw() const override {
         drawFunction((uint16_t ) x, (uint16_t ) y);
+    }
+
+    void setAccelerationFunctions(float (*axFunction)(float, float, float, float), float (*ayFunction)(float, float, float, float)) {
+        this->axFunction = axFunction;
+        this->ayFunction = ayFunction;
     }
 
 private:
