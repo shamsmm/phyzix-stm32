@@ -12,15 +12,17 @@
 #include "lcd_st7735/lcd.h"
 
 class Application {
-private:
+public:
     static Scene * scene;
     static Camera * camera;
     static uint32_t last_tick;
+    static uint32_t last_render;
 
     Application() {
         scene = nullptr;
         camera = nullptr;
         last_tick = Tick;
+        last_render = 0;
     };
 
 public:

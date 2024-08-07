@@ -12,7 +12,7 @@
 #include "Drawable.h"
 
 class Scene {
-private:
+//private:
     uint16_t x_size;
     uint16_t y_size;
     Drawable ** drawables = nullptr;
