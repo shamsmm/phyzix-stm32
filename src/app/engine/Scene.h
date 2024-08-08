@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <algorithm>
 #include "Drawable.h"
+#include "Boundary.h"
 
 class Scene {
 //private:
@@ -18,6 +19,9 @@ class Scene {
     Drawable ** drawables = nullptr;
     size_t drawableCount = 0;
     size_t drawableCapacity = 0;
+public:
+    uint16_t boundaryCount;
+    Boundary ** boundaries;
 
     void resizeDrawables(size_t newCapacity) {
         auto ** newDrawables = new Drawable*[newCapacity];

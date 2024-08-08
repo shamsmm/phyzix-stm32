@@ -2,4 +2,4 @@
 // Created by shams on 8/7/24.
 //
 
-#include "Boundry.h"
+#include "Boundary.h"

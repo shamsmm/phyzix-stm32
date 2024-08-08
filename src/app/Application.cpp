@@ -2,6 +2,7 @@
 #include "app/engine/Scene.h"
 #include "Application.h"
 #include "lcd_st7735/graphics/gfx.h"
+#include "app/engine/LineSegmentBoundary.h"
 
 Scene * Application::scene;
 Camera * Application::camera;
@@ -47,7 +48,7 @@ void Application::render() {
     last_render = Tick;
 
     while (true) {
-        if (scene && camera && (Tick - last_render > 4)) {
+        if (scene && camera && (Tick - last_render > 10)) {
             // TODO: handle camera movement
 
             fillScreen(BLACK);
@@ -73,6 +74,11 @@ void Application::game() {
 
     // Beginning scene
     scene = new Scene(160, 256);
+    scene->boundaries = new Boundary * [4];
+    scene->boundaryCount = 4;
+    scene->boundaries[0] = (Boundary *) (new LineSegmentBoundary(0.0,0.0,0.0,160.0));
+    LineSegmentBoundary xx1(0.0,0.0,0.0,160.0);
+    Boundary * zabood = &xx1;
     camera = new Camera(160, 128);
     ST7735_WriteString(0, 18 + 1, "HEllo2222", Font_11x18, RED,BLACK);
 

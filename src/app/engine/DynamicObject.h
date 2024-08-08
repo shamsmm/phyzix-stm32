@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include "Drawable.h"
+#include "Boundary.h"
 
 class DynamicObject : public Drawable{
 public:
@@ -20,7 +21,6 @@ public:
     float v_y = 0;
     float a_x = 0;
     float a_y = 0;
-
     float (*axFunction)(float, float, float, float);
     float (*ayFunction)(float, float, float, float);
 
@@ -45,6 +45,10 @@ public:
 private:
     void (*drawFunction)(uint16_t, uint16_t);
     void (*blackOutFunction)(uint16_t, uint16_t);
+
+public:
+    Boundary ** boundaries;
+    uint16_t boundaryCount;
 };
 
 
