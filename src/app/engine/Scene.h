@@ -13,7 +13,7 @@
 #include "Boundary.h"
 
 class Scene {
-//private:
+public:
     uint16_t x_size;
     uint16_t y_size;
     Drawable ** drawables = nullptr;

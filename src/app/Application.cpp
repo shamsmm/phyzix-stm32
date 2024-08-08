@@ -3,29 +3,39 @@
 #include "Application.h"
 #include "lcd_st7735/graphics/gfx.h"
 #include "app/engine/LineSegmentBoundary.h"
+#include "app/engine/CircleBoundary.h"
 
 Scene * Application::scene;
 Camera * Application::camera;
 uint32_t Application::last_tick;
 uint32_t Application::last_render;
 
-void updateDynamicObject(Drawable * d) {
-    if (auto * it = dynamic_cast<DynamicObject*>(d)) {
-        float dt = (Tick - Application::last_tick) * 1; // in 10 millisecond ticks
+void handlePhysics(Scene * scene) {
 
-        it->prev_x = it->x;
-        it->prev_y = it->y;
-        it->x += it->v_x * dt;
-        it->x += it->v_x * dt;
-        it->y += it->v_y * dt;
-        it->v_x += it->a_x * dt;
-        it->v_y += it->a_y * dt;
-        it->a_x = it->axFunction(it->x, it->y, it->a_x, it->a_y);
-        it->a_y = it->ayFunction(it->x, it->y, it->a_x, it->a_y);
+    for (size_t i = 0; i < scene->drawableCount; ++i) {
+        auto I = scene->drawables[i];
 
-        if (it->y - 25 < 0) {
-            it->y = 25;
-            it->v_y = -it->v_y * 0.7;
+        if (auto * it = dynamic_cast<DynamicObject*>(I)) {
+            float dt = (Tick - Application::last_tick) * 1; // in 10 millisecond ticks
+
+            it->prev_x = it->x;
+            it->prev_y = it->y;
+            it->x += it->v_x * dt;
+            it->x += it->v_x * dt;
+            it->y += it->v_y * dt;
+            it->v_x += it->a_x * dt;
+            it->v_y += it->a_y * dt;
+            it->a_x = it->axFunction(it->x, it->y, it->a_x, it->a_y);
+            it->a_y = it->ayFunction(it->x, it->y, it->a_x, it->a_y);
+
+            for (size_t j = i; j < scene->drawableCount; ++j) {
+                auto J = scene->drawables[j];
+                if (auto * other = dynamic_cast<DynamicObject*>(J)) {
+                    if (Boundary::intersects(it->boundaries, it->boundaryCount, other->boundaries, other->boundaryCount)) {
+
+                    }
+                }
+            }
         }
     }
 }
@@ -35,7 +45,7 @@ void Application::update() {
 
     while (true) {
         if (scene) {
-            scene->forEachDrawable(updateDynamicObject);
+            handlePhysics(scene);
         }
 
         last_tick = Tick;
@@ -76,10 +86,12 @@ void Application::game() {
     scene = new Scene(160, 256);
     scene->boundaries = new Boundary * [4];
     scene->boundaryCount = 4;
-    scene->boundaries[0] = (Boundary *) (new LineSegmentBoundary(0.0,0.0,0.0,160.0));
-    LineSegmentBoundary xx1(0.0,0.0,0.0,160.0);
-    Boundary * zabood = &xx1;
+    scene->boundaries[0] = new LineSegmentBoundary(0.0,0.0,0.0,160.0);
+    scene->boundaries[1] = new LineSegmentBoundary(0.0,0.0,128,0.0);
+    scene->boundaries[2] = new LineSegmentBoundary(128,0.0,128,160.0);
+    scene->boundaries[3] = new LineSegmentBoundary(0.0,160,128,160.0);
     camera = new Camera(160, 128);
+
     ST7735_WriteString(0, 18 + 1, "HEllo2222", Font_11x18, RED,BLACK);
 
     scene->addDrawable(new StaticObject([] {
@@ -92,6 +104,10 @@ void Application::game() {
                                                 ST7735_FillRectangle(x, y, 25,25,BLACK);
                                             },
                                             5,120);
+    box->boundaryCount = 1;
+    box->boundaries = new Boundary * [1];
+    box->boundaries[0] = new CircleBoundary(12.5, 12.5, 5);
+
     box->setAccelerationFunctions([](float x, float y, float v_x, float v_y) -> float {
         return 0;
     },[](float x, float y, float v_x, float v_y) -> float {

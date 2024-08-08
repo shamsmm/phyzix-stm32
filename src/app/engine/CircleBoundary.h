@@ -15,6 +15,8 @@ public:
     float y;
     float r;
 
+    CircleBoundary(float x, float y, float r): x(x), y(y), r(r) {}
+
     bool intersects(Boundary * other) const override;
 };
 
