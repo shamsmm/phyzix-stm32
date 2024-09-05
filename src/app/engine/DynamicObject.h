@@ -23,10 +23,16 @@ public:
     float a_y = 0;
     float (*axFunction)(float, float, float, float);
     float (*ayFunction)(float, float, float, float);
+    bool isStatic = false;
 
     // Constructor takes a callable to implement the draw method
-    DynamicObject( void (*drawFunction)(uint16_t, uint16_t),void (*blackOutFunction)(uint16_t, uint16_t), uint16_t x, uint16_t y)
-            : drawFunction(drawFunction),blackOutFunction(blackOutFunction), x(x), y(y) {}
+    DynamicObject(
+            void (*drawFunction)(uint16_t, uint16_t),
+            void (*blackOutFunction)(uint16_t, uint16_t),
+            void (*boundaryUpdateFunction)(Boundary ** boundaries, uint16_t boundaryCount, uint16_t, uint16_t),
+            uint16_t x, uint16_t y
+            )
+            : drawFunction(drawFunction),blackOutFunction(blackOutFunction), boundaryUpdateFunction(boundaryUpdateFunction), x(x), y(y) {}
 
     // Override the draw method from the base class
     void draw() const override {
@@ -42,8 +48,9 @@ public:
         this->ayFunction = ayFunction;
     }
 
-private:
+public:
     void (*drawFunction)(uint16_t, uint16_t);
+    void (*boundaryUpdateFunction)(Boundary ** boundaries, uint16_t boundaryCount, uint16_t, uint16_t);
     void (*blackOutFunction)(uint16_t, uint16_t);
 
 public:
