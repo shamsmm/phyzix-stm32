@@ -1,5 +1,3 @@
-ifeq ($(MODE), test)
-
 # Toolchains
 PP=g++
 
@@ -30,7 +28,5 @@ $(TARGET): $(OBJ)
 
 clean:
 	rm -rf $(BINDIR)
-
-endif
 
 .PHONY: clean

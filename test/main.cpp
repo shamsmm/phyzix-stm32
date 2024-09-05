@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <iostream>
+#include <cassert>
 
 volatile uint32_t Tick;
 

@@ -1,5 +1,3 @@
-ifeq ($(MODE), stm)
-
 # Toolchains
 TOOLCHAIN=arm-none-eabi
 CC=$(TOOLCHAIN)-gcc
@@ -54,7 +52,5 @@ $(TARGET): $(OBJ)
 
 clean:
 	rm -rf $(BINDIR)
-
-endif
 
 .PHONY: clean flash
