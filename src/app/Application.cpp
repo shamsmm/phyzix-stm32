@@ -8,9 +8,9 @@
 Scene * Application::scene;
 Camera * Application::camera;
 uint32_t Application::last_tick;
-uint32_t Application::last_render;
+uint32_t Application::last_render_tick;
 
-void handlePhysics(Scene * scene) {
+void handle_physics(Scene * scene) {
     for (size_t i = 0; i < scene->drawableCount; ++i) {
         auto I = scene->drawables[i];
 
@@ -47,6 +47,9 @@ void handlePhysics(Scene * scene) {
                     if (Boundary::intersects(it->boundaries, it->boundaryCount, other->boundaries, other->boundaryCount)) {
                         it->v_x = -it->v_x;
                         it->v_y = -it->v_y;
+
+                        other->v_x = -other->v_x;
+                        other->v_y = -other->v_y;
                     }
                 }
             }
@@ -59,7 +62,7 @@ void Application::update() {
 
     while (true) {
         if (scene) {
-            handlePhysics(scene);
+            handle_physics(scene);
         }
 
         last_tick = Tick;
@@ -69,11 +72,11 @@ void Application::update() {
 }
 
 void Application::render() {
-    last_render = Tick;
+    last_render_tick = Tick;
 
     while (true) {
-        if (scene && camera && (Tick - last_render > 10)) {
-            // TODO: handle camera movement
+        if (scene && camera && (Tick - last_render_tick > 10)) {
+            // TODO: handle camera movement over the scene; clipping objects
 
             //fillScreen(BLACK);
 
@@ -81,7 +84,7 @@ void Application::render() {
                 d->draw();
             });
 
-            last_render = Tick;
+            last_render_tick = Tick;
         }
 
         os_schedule();
@@ -113,19 +116,18 @@ void Application::game() {
     DynamicObject * box = new DynamicObject([] (uint16_t x, uint16_t y) {
 
 
-                                                ST7735_FillRectangle(x, y, 25,25,GREEN);
+                                                ST7735_FillRectangle(x, y, 25,25,BLUE);
 
 
                                             },[] (uint16_t x, uint16_t y) {
 
-
+                                                // TODO fill only coordinates, for scene to re render background for example
                                                 ST7735_FillRectangle(x, y, 25,25,BLACK);
 
 
-                                            },[] (Boundary ** boundaries, uint16_t boundaryCount, uint16_t x, uint16_t y) {
-                                                ((CircleBoundary *) boundaries[0])->x = x + 25;
-                                                ((CircleBoundary *) boundaries[0])->y = y + 25;
-
+                                            },[] (Boundary ** boundaries, uint16_t _, uint16_t x, uint16_t y) {
+                                                ((CircleBoundary *) boundaries[0])->x = x + 12.5;
+                                                ((CircleBoundary *) boundaries[0])->y = y + 12.5;
                                             },
                                             50,120);
     box->boundaryCount = 1;
@@ -133,7 +135,7 @@ void Application::game() {
     box->boundaries[0] = new CircleBoundary(12.5, 12.5, 5);
 
     box->setAccelerationFunctions([](float x, float y, float v_x, float v_y) -> float {
-        return 0;
+        return -v_x * 0.1;
     },[](float x, float y, float v_x, float v_y) -> float {
         return  (-9.81 * 8 * 1 / 100 * 1 / 100); // -9.81m/s^2 * 8pixels/meter *1/1ms
     });
@@ -144,8 +146,9 @@ void Application::game() {
 
     OS_TASK_UNLOCK();
 
-    while (true);
+    while (true) {
+    }
 
-    //Monitor current level
-    // Switch between scens
+    // Monitor current level
+    // Switch between scenes
 }

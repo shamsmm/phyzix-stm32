@@ -15,17 +15,18 @@ class Application {
 private:
     static Scene * scene;
     static Camera * camera;
-    static uint32_t last_tick;
-    static uint32_t last_render;
 
     Application() {
         scene = nullptr;
         camera = nullptr;
         last_tick = Tick;
-        last_render = 0;
+        last_render_tick = 0;
     };
 
 public:
+    static uint32_t last_tick;
+    static uint32_t last_render_tick;
+
     static Application& getInstance() {
         static Application instance; // Guaranteed to be destroyed.
         // Instantiated on first use.
