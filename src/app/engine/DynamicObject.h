@@ -9,56 +9,49 @@
 #include <cstdint>
 #include "Drawable.h"
 #include "Boundary.h"
+#include "Vector.h"
 
 class DynamicObject : public Drawable{
 public:
     float prev_x = 0;
     float prev_y = 0;
-    float x = 0;
-    float y = 0;
-    float z = 0;
-    float v_x = 0;
-    float v_y = 0;
-    float a_x = 0;
-    float a_y = 0;
-    float (*axFunction)(float, float, float, float);
-    float (*ayFunction)(float, float, float, float);
-    bool isStatic = false;
+
+    Vector s;
+    Vector v = Vector(0, 0);
+    Vector a = Vector(0, 0);
+    float m = 1;
+
+    Vector (*forceFunction)(float, float, float, float, float){};
+
+    float zIndex = 0;
 
     // Constructor takes a callable to implement the draw method
     DynamicObject(
-            void (*drawFunction)(uint16_t, uint16_t),
-            void (*blackOutFunction)(uint16_t, uint16_t),
-            void (*boundaryUpdateFunction)(Boundary ** boundaries, uint16_t boundaryCount, float, float),
-            uint16_t x, uint16_t y
-            )
-            : drawFunction(drawFunction),blackOutFunction(blackOutFunction), boundaryUpdateFunction(boundaryUpdateFunction), x(x), y(y) {}
+            void (*drawFunction)(float , float),
+            void (*blackOutFunction)(float , float),
+            void (*boundaryUpdateFunction)(Boundaries&, Vector&),
+            float x,
+            float y
+    )
+    : drawFunction(drawFunction), blackOutFunction(blackOutFunction), updateBoundaryFunction(boundaryUpdateFunction), s(Vector(x, y)) {}
 
     // Override the draw method from the base class
     void draw() const override {
-        drawFunction((uint16_t ) x, (uint16_t ) y);
+        drawFunction(s.x, s.y);
     }
 
     void blackOut() const {
 //        OS_TASK_LOCK();
-        blackOutFunction((uint16_t ) prev_x, (uint16_t ) prev_y);
+        blackOutFunction(prev_x, prev_y);
 //        OS_TASK_UNLOCK();
 //        os_schedule();
     }
 
-    void setAccelerationFunctions(float (*axFunction)(float, float, float, float), float (*ayFunction)(float, float, float, float)) {
-        this->axFunction = axFunction;
-        this->ayFunction = ayFunction;
-    }
-
 public:
-    void (*drawFunction)(uint16_t, uint16_t);
-    void (*boundaryUpdateFunction)(Boundary ** boundaries, uint16_t boundaryCount, float , float);
-    void (*blackOutFunction)(uint16_t, uint16_t);
-
-public:
-    Boundary ** boundaries;
-    uint16_t boundaryCount;
+    void (*drawFunction)(float , float );
+    void (*blackOutFunction)(float , float );
+    void (*updateBoundaryFunction)(Boundaries&, Vector&);
+    Boundaries boundaries;
 };
 
 

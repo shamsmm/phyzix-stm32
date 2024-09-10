@@ -6,8 +6,13 @@
 #define PHYZIX_BOUNDARY_H
 
 
-#include <cstdio>
+#include <cstdint>
 class Boundary;
+
+struct Boundaries {
+    Boundary ** list;
+    uint16_t count;
+};
 
 struct BoundaryIntersectionResult {
     char intersects : 1;
@@ -21,11 +26,11 @@ public:
 
     virtual bool intersects(Boundary * other) const = 0;
 
-    static BoundaryIntersectionResult intersects(Boundary ** b1, size_t b1Count, Boundary ** b2, size_t b2Count) {
-        for(int i = 0; i < b1Count; ++i) {
-            for (int j = i; j < b2Count; ++j) {
-                if (b1[i]->intersects(b2[j]))
-                    return {true, b1[i], b2[j]};
+    static BoundaryIntersectionResult intersects(Boundaries b1, Boundaries b2) {
+        for(int i = 0; i < b1.count; ++i) {
+            for (int j = i; j < b2.count; ++j) {
+                if (b1.list[i]->intersects(b2.list[j]))
+                    return {true, b1.list[i], b2.list[j]};
             }
         }
 

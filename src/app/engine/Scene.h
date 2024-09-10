@@ -20,8 +20,7 @@ public:
     size_t drawableCount = 0;
     size_t drawableCapacity = 0;
 public:
-    uint16_t boundaryCount;
-    Boundary ** boundaries;
+    Boundaries boundaries;
 
     void resizeDrawables(size_t newCapacity) {
         auto ** newDrawables = new Drawable*[newCapacity];
