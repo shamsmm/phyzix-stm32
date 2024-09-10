@@ -7,6 +7,8 @@
 
 
 #include <cstdint>
+#include "Vector.h"
+
 class Boundary;
 
 struct Boundaries {
@@ -15,7 +17,8 @@ struct Boundaries {
 };
 
 struct BoundaryIntersectionResult {
-    char intersects : 1;
+    bool intersected = false;
+    Vector normal{0, 0};
     Boundary * it;
     Boundary * other;
 };
@@ -24,17 +27,18 @@ class Boundary{
 public:
     float e = 0.5;
 
-    virtual bool intersects(Boundary * other) const = 0;
+    virtual BoundaryIntersectionResult intersects(Boundary * other) = 0;
 
     static BoundaryIntersectionResult intersects(Boundaries b1, Boundaries b2) {
         for(int i = 0; i < b1.count; ++i) {
             for (int j = i; j < b2.count; ++j) {
-                if (b1.list[i]->intersects(b2.list[j]))
-                    return {true, b1.list[i], b2.list[j]};
+                auto intersection = b1.list[i]->intersects(b2.list[j]);
+                if (intersection.intersected)
+                    return intersection;
             }
         }
 
-        return {false};
+        return {};
     }
 };
 

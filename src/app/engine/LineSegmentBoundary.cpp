@@ -6,7 +6,7 @@
 #include "CircleBoundary.h"
 #include "app/math/Math.h"
 
-bool LineSegmentBoundary::intersects(Boundary *other) const {
+BoundaryIntersectionResult LineSegmentBoundary::intersects(Boundary *other) {
     if (dynamic_cast<LineSegmentBoundary*>(other)) {
         auto it = dynamic_cast<LineSegmentBoundary*>(other);
 
@@ -16,7 +16,9 @@ bool LineSegmentBoundary::intersects(Boundary *other) const {
         double A2 = it->y2 - it->y1;
         double B2 = it->x1 - it->x2;
 
-        return A1 * B2 - A2 * B1 != 0;
+        if (A1 * B2 - A2 * B1 != 0) {
+
+        }
     } else if ( dynamic_cast<CircleBoundary *>(other) ) {
         auto it = dynamic_cast<CircleBoundary *>(other);
 
@@ -24,11 +26,23 @@ bool LineSegmentBoundary::intersects(Boundary *other) const {
         double B = this->x1 - this->x2;
         double C = this->x2 * this->y1 - this->x1 * this->y2;
 
-        double distance = Math::fabs(A * it->x + B * it->y + C) / Math::sqrt(A * A + B * B);
+        float D = C/B + it->y;
+        float a = 1 + A * A / (B * B);
+        float b = -2 * it->x - 2 * (A * D) / B;
+        float c = it->x * it->x + D * D - it->r * it->r;
 
-        // Check if the distance is less than or equal to the radius
-        return distance <= it->r;
+        float discriminant = b * b - 4 * a * c;
+        if (discriminant >= 0) {
+            float sqrtDiscriminant = Math::sqrt(discriminant);
+            float x1 = (-b + sqrtDiscriminant) / (2 * a);
+            float x2 = (-b - sqrtDiscriminant) / (2 * a);
+            float y1 = -A/B * x1 - C/B;
+            float y2 = -A/B * x2 - C/B;
+
+
+            return {true, Vector(it->x - (x1 + x2) / 2, it->y - (y1 + y2) / 2).getNormal(), this, other};
+        }
     }
 
-    return false;
+    return {};
 }

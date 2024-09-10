@@ -25,7 +25,7 @@ void handle_physics(Scene * scene, float dt) {
             it->a = it->forceFunction(it->s.x, it->s.y, it->a.x, it->s.y, it->m) * (1 / it->m);
 
             auto scene_collision = Boundary::intersects(it->boundaries, scene->boundaries);
-            if (scene_collision.intersects) {
+            if (scene_collision.intersected) {
                 //it->x = 50;
                 //it->y = 50;
                 //it->v_x = -it->v_x;

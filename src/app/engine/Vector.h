@@ -6,6 +6,8 @@
 #define PHYZIX_VECTOR_H
 
 
+#include "app/math/Math.h"
+
 class Vector {
 public:
     float x; // can be a_x, v_x, x, i, ..
@@ -19,6 +21,15 @@ public:
 
     Vector operator*(float scalar) const {
         return {this->x * scalar, this->y * scalar};
+    }
+
+    float getMagnitude() const {
+        return Math::sqrt(Math::pow(this->x, 2) + Math::pow(this->y, 2));
+    }
+
+    Vector getNormal() const {
+        float magnitude = getMagnitude();
+        return {this->x / magnitude, this->y / magnitude};
     }
 };
 

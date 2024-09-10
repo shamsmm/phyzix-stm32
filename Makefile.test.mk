@@ -19,6 +19,8 @@ TARGET = $(BINDIR)/run
 test: $(TARGET)
 	./$(TARGET)
 
+build: $(TARGET)
+
 $(TARGET): $(OBJ)
 	$(PP) -o $(TARGET) $(addprefix $(BINDIR)/, $(OBJ))
 

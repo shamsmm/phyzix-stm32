@@ -49,44 +49,50 @@ void boundary_tests() {
 
     b1 = new CircleBoundary(5, 5 , 3);
     b2 = new CircleBoundary(20 + 0.1, 5 , 12);
-    assert(!b1->intersects(b2));
+    cout << "x: " << b1->intersects(b2).normal.x << ", y: " << b1->intersects(b2).normal.y << endl;
+    assert(!b1->intersects(b2).intersected);
 
     b1 = new CircleBoundary(5, 5 , 3);
     b2 = new CircleBoundary(20 - 0.1, 5 , 12);
-    assert(b1->intersects(b2));
+    assert(b1->intersects(b2).intersected);
 
     b1 = new CircleBoundary(5, 5 , 3);
     b2 = new CircleBoundary(20 - 0.1, 5 - 0.1 , 12);
-    assert(b1->intersects(b2));
+    assert(b1->intersects(b2).intersected);
 
     b1 = new CircleBoundary(5, 5 , 3);
     b2 = new CircleBoundary(20 - 0.1, 5 + 0.1 , 12);
-    assert(b1->intersects(b2));
+    assert(b1->intersects(b2).intersected);
 
     auto * scene = new Scene(160, 256);
-    scene->boundaries = new Boundary * [4];
-    scene->boundaryCount = 4;
-    scene->boundaries[0] = new LineSegmentBoundary(0.0,0.0,0.0,160.0); // "|.."
-    scene->boundaries[1] = new LineSegmentBoundary(0.0,0.0,128,0.0); // "__"
-    scene->boundaries[2] = new LineSegmentBoundary(128,0.0,128,160.0); // "..|"
-    scene->boundaries[3] = new LineSegmentBoundary(0.0,160,128,160.0); // "^^"
+    scene->boundaries.list = new Boundary * [4];
+    scene->boundaries.count = 4;
+    scene->boundaries.list[0] = new LineSegmentBoundary(0.0,0.0,0.0,160.0); // "|.."
+    scene->boundaries.list[1] = new LineSegmentBoundary(0.0,0.0,128,0.0); // "__"
+    scene->boundaries.list[2] = new LineSegmentBoundary(128,0.0,128,160.0); // "..|"
+    scene->boundaries.list[3] = new LineSegmentBoundary(0.0,160,128,160.0); // "^^"
 
     CircleBoundary * b = new CircleBoundary(50,50,5);
-    assert(!b->intersects(scene->boundaries[0]));
-    assert(!b->intersects(scene->boundaries[1]));
-    assert(!b->intersects(scene->boundaries[2]));
-    assert(!b->intersects(scene->boundaries[3]));
+
+    cout << "ZZZZZZZZZZZZz" << endl;
+    cout << "x: " << b->intersects(scene->boundaries.list[0]).normal.x << ", y: " << b->intersects(scene->boundaries.list[0]).normal.y << endl;
+    cout << "ZZZZZZZZZZZZz" << endl;
+
+    assert(!b->intersects(scene->boundaries.list[0]).intersected);
+    assert(!b->intersects(scene->boundaries.list[1]).intersected);
+    assert(!b->intersects(scene->boundaries.list[2]).intersected);
+    assert(!b->intersects(scene->boundaries.list[3]).intersected);
 
     b->x = 2;
-    assert(b->intersects(scene->boundaries[0]));
-    assert(!b->intersects(scene->boundaries[1]));
-    assert(!b->intersects(scene->boundaries[2]));
-    assert(!b->intersects(scene->boundaries[3]));
+    assert(b->intersects(scene->boundaries.list[0]).intersected);
+    assert(!b->intersects(scene->boundaries.list[1]).intersected);
+    assert(!b->intersects(scene->boundaries.list[2]).intersected);
+    assert(!b->intersects(scene->boundaries.list[3]).intersected);
 
     b->x = 126;
-    assert(!b->intersects(scene->boundaries[0]));
-    assert(!b->intersects(scene->boundaries[1]));
-    assert(b->intersects(scene->boundaries[2]));
-    assert(!b->intersects(scene->boundaries[3]));
+    assert(!b->intersects(scene->boundaries.list[0]).intersected);
+    assert(!b->intersects(scene->boundaries.list[1]).intersected);
+    assert(b->intersects(scene->boundaries.list[2]).intersected);
+    assert(!b->intersects(scene->boundaries.list[3]).intersected);
 
 }
