@@ -4,22 +4,19 @@
 #include "lcd_st7735/graphics/gfx.h"
 #include "app/engine/LineSegmentBoundary.h"
 #include "app/engine/CircleBoundary.h"
+#include "app/math/Math.h"
 
 Scene * Application::scene;
 Camera * Application::camera;
 uint32_t Application::last_tick;
 uint32_t Application::last_render_tick;
 
-void handle_physics(Scene * scene) {
+void handle_physics(Scene * scene, float dt) {
     for (size_t i = 0; i < scene->drawableCount; ++i) {
         auto I = scene->drawables[i];
 
         if (auto * it = dynamic_cast<DynamicObject*>(I)) {
-            float dt = (Tick - Application::last_tick) * 1; // in 10 millisecond ticks
-
-            it->prev_x = it->x; // For blackout
-            it->prev_y = it->y;
-
+            printf("v_y: %f\n", it->v_y);
 
             it->x += it->v_x * dt;
             it->y += it->v_y * dt;
@@ -32,19 +29,20 @@ void handle_physics(Scene * scene) {
             it->a_x = it->axFunction(it->x, it->y, it->a_x, it->a_y);
             it->a_y = it->ayFunction(it->x, it->y, it->a_x, it->a_y);
 
-
-
-            if (Boundary::intersects(it->boundaries, it->boundaryCount, scene->boundaries, scene->boundaryCount)) {
-                it->x = 50;
-                it->y = 50;
-                it->v_x = -it->v_x;
-                it->v_y = -it->v_y;
+            auto scene_collision = Boundary::intersects(it->boundaries, it->boundaryCount, scene->boundaries, scene->boundaryCount);
+            if (scene_collision.intersects) {
+                //it->x = 50;
+                //it->y = 50;
+                //it->v_x = -it->v_x;
+                it->v_x = 0;
+                it->v_y = -it->v_y * scene_collision.other->e;
             }
 
             for (size_t j = i; j < scene->drawableCount; ++j) {
                 auto J = scene->drawables[j];
                 if (auto * other = dynamic_cast<DynamicObject*>(J)) {
-                    if (Boundary::intersects(it->boundaries, it->boundaryCount, other->boundaries, other->boundaryCount)) {
+                    auto object_collision = Boundary::intersects(it->boundaries, it->boundaryCount, other->boundaries, other->boundaryCount);
+                    if (object_collision.intersects) {
                         it->v_x = -it->v_x;
                         it->v_y = -it->v_y;
 
@@ -62,7 +60,7 @@ void Application::update() {
 
     while (true) {
         if (scene) {
-            handle_physics(scene);
+            handle_physics(scene, (Tick - Application::last_tick) * 10);
         }
 
         last_tick = Tick;
@@ -81,6 +79,13 @@ void Application::render() {
             //fillScreen(BLACK);
 
             scene->forEachDrawable([] (Drawable * d) {
+                if (auto * object = dynamic_cast<DynamicObject *>(d)) {
+                    object->blackOut();
+
+                    object->prev_x = object->x;
+                    object->prev_y = object->y;
+                }
+
                 d->draw();
             });
 
@@ -105,6 +110,7 @@ void Application::game() {
     scene->boundaryCount = 4;
     scene->boundaries[0] = new LineSegmentBoundary(0.0,0.0,0.0,160.0);
     scene->boundaries[1] = new LineSegmentBoundary(0.0,0.0,128,0.0);
+    scene->boundaries[1]->e = 0.5;
     scene->boundaries[2] = new LineSegmentBoundary(128,0.0,128,160.0);
     scene->boundaries[3] = new LineSegmentBoundary(0.0,160,128,160.0);
     camera = new Camera(160, 128);
@@ -125,9 +131,9 @@ void Application::game() {
                                                 ST7735_FillRectangle(x, y, 25,25,BLACK);
 
 
-                                            },[] (Boundary ** boundaries, uint16_t _, uint16_t x, uint16_t y) {
-                                                ((CircleBoundary *) boundaries[0])->x = x + 12.5;
-                                                ((CircleBoundary *) boundaries[0])->y = y + 12.5;
+                                            },[] (Boundary ** boundaries, uint16_t _, float x, float y) {
+                                                ((CircleBoundary *) boundaries[0])->x = x + 25;
+                                                ((CircleBoundary *) boundaries[0])->y = y;
                                             },
                                             50,120);
     box->boundaryCount = 1;
@@ -135,12 +141,12 @@ void Application::game() {
     box->boundaries[0] = new CircleBoundary(12.5, 12.5, 5);
 
     box->setAccelerationFunctions([](float x, float y, float v_x, float v_y) -> float {
-        return -v_x * 0.1;
+        return 0;
     },[](float x, float y, float v_x, float v_y) -> float {
-        return  (-9.81 * 8 * 1 / 100 * 1 / 100); // -9.81m/s^2 * 8pixels/meter *1/1ms
+        return  (-9.81 * 8 * 1 / 100 * 1 / 100); // -9.81m/s^2 * 8pixels/meter *1/10ms^2 [pixels/10ms^2]
     });
 
-    box->v_x = 1.0 * 8 / 100;
+    //box->v_x = 1.0 * 8 / 100;
 
     scene->addDrawable(box);
 

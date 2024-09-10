@@ -21,6 +21,14 @@ public:
         return result;
     }
 
+    static float min(float a, float b) {
+        return a > b ? b : a;
+    }
+
+    static float max(float a, float b) {
+        return a > b ? a : b;
+    }
+
     static float fabs(float n) {
         return n < 0 ? -n : n;
     }

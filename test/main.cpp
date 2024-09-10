@@ -5,6 +5,8 @@
 #include "app/math/Math.h"
 #include "app/engine/Boundary.h"
 #include "app/engine/CircleBoundary.h"
+#include "app/engine/Scene.h"
+#include "app/engine/LineSegmentBoundary.h"
 
 volatile uint32_t Tick;
 
@@ -60,4 +62,31 @@ void boundary_tests() {
     b1 = new CircleBoundary(5, 5 , 3);
     b2 = new CircleBoundary(20 - 0.1, 5 + 0.1 , 12);
     assert(b1->intersects(b2));
+
+    auto * scene = new Scene(160, 256);
+    scene->boundaries = new Boundary * [4];
+    scene->boundaryCount = 4;
+    scene->boundaries[0] = new LineSegmentBoundary(0.0,0.0,0.0,160.0); // "|.."
+    scene->boundaries[1] = new LineSegmentBoundary(0.0,0.0,128,0.0); // "__"
+    scene->boundaries[2] = new LineSegmentBoundary(128,0.0,128,160.0); // "..|"
+    scene->boundaries[3] = new LineSegmentBoundary(0.0,160,128,160.0); // "^^"
+
+    CircleBoundary * b = new CircleBoundary(50,50,5);
+    assert(!b->intersects(scene->boundaries[0]));
+    assert(!b->intersects(scene->boundaries[1]));
+    assert(!b->intersects(scene->boundaries[2]));
+    assert(!b->intersects(scene->boundaries[3]));
+
+    b->x = 2;
+    assert(b->intersects(scene->boundaries[0]));
+    assert(!b->intersects(scene->boundaries[1]));
+    assert(!b->intersects(scene->boundaries[2]));
+    assert(!b->intersects(scene->boundaries[3]));
+
+    b->x = 126;
+    assert(!b->intersects(scene->boundaries[0]));
+    assert(!b->intersects(scene->boundaries[1]));
+    assert(b->intersects(scene->boundaries[2]));
+    assert(!b->intersects(scene->boundaries[3]));
+
 }

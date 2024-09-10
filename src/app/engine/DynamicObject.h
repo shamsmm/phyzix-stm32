@@ -29,7 +29,7 @@ public:
     DynamicObject(
             void (*drawFunction)(uint16_t, uint16_t),
             void (*blackOutFunction)(uint16_t, uint16_t),
-            void (*boundaryUpdateFunction)(Boundary ** boundaries, uint16_t boundaryCount, uint16_t, uint16_t),
+            void (*boundaryUpdateFunction)(Boundary ** boundaries, uint16_t boundaryCount, float, float),
             uint16_t x, uint16_t y
             )
             : drawFunction(drawFunction),blackOutFunction(blackOutFunction), boundaryUpdateFunction(boundaryUpdateFunction), x(x), y(y) {}
@@ -40,7 +40,10 @@ public:
     }
 
     void blackOut() const {
+//        OS_TASK_LOCK();
         blackOutFunction((uint16_t ) prev_x, (uint16_t ) prev_y);
+//        OS_TASK_UNLOCK();
+//        os_schedule();
     }
 
     void setAccelerationFunctions(float (*axFunction)(float, float, float, float), float (*ayFunction)(float, float, float, float)) {
@@ -50,7 +53,7 @@ public:
 
 public:
     void (*drawFunction)(uint16_t, uint16_t);
-    void (*boundaryUpdateFunction)(Boundary ** boundaries, uint16_t boundaryCount, uint16_t, uint16_t);
+    void (*boundaryUpdateFunction)(Boundary ** boundaries, uint16_t boundaryCount, float , float);
     void (*blackOutFunction)(uint16_t, uint16_t);
 
 public:
