@@ -74,14 +74,19 @@ void Application::render() {
             //fillScreen(BLACK);
 
             scene->forEachDrawable([] (Drawable * d) {
+                OS_TASK_LOCK();
                 if (auto * object = dynamic_cast<DynamicObject *>(d)) {
                     object->blackOut();
+
 
                     object->prev_x = object->s.x;
                     object->prev_y = object->s.y;
                 }
 
+
                 d->draw();
+                OS_TASK_UNLOCK();
+//                os_schedule();
             });
 
             last_render_tick = Tick;
@@ -114,7 +119,7 @@ void Application::game() {
         ST7735_FillRectangle(0, 0, 25,25,GREEN);
     }));
 
-    auto * box = new DynamicObject(
+    auto * box1 = new DynamicObject(
             [] (float x, float y) {
                 ST7735_FillRectangle(x, y, 25,25,BLUE);
             },
@@ -127,14 +132,35 @@ void Application::game() {
             },
             50,120);
 
-    box->boundaries.count = 1;
-    box->boundaries.list = new Boundary * [1];
-    box->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 5);
-    box->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
+    box1->boundaries.count = 1;
+    box1->boundaries.list = new Boundary * [1];
+    box1->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 5);
+    box1->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
         return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100);
     };
 
-    scene->addDrawable(box);
+    auto * box2 = new DynamicObject(
+            [] (float x, float y) {
+                ST7735_FillRectangle(x, y, 25,25,RED);
+            },
+            [] (float x, float y) {
+                // TODO fill only coordinates, for scene to re render background for example
+                ST7735_FillRectangle(x, y, 25,25,BLACK);
+            },[] (Boundaries& boundaries, Vector& s) {
+                ((CircleBoundary *) boundaries.list[0])->x = s.x;
+                ((CircleBoundary *) boundaries.list[0])->y = s.y;
+            },
+            10,120);
+
+    box2->boundaries.count = 1;
+    box2->boundaries.list = new Boundary * [1];
+    box2->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 5);
+    box2->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
+        return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100);
+    };
+
+    scene->addDrawable(box1);
+    scene->addDrawable(box2);
 
     OS_TASK_UNLOCK();
 

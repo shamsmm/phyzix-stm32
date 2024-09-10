@@ -41,10 +41,7 @@ public:
     }
 
     void blackOut() const {
-//        OS_TASK_LOCK();
         blackOutFunction(prev_x, prev_y);
-//        OS_TASK_UNLOCK();
-//        os_schedule();
     }
 
 public:
