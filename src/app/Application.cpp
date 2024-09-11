@@ -68,18 +68,16 @@ void handle_physics(Scene * scene, float dt) {
                         other->v = object_collision.normal * v2_n + object_collision.normal.getPerpendicular() * v2_p;
                     }
                 }
-//                else if (auto * other_s = dynamic_cast<StaticObject*>(J)) {
-//                    auto object_collision = Boundary::intersects(it->boundaries, other_s->boundaries);
-//                    if (object_collision.intersected) {
-//                        it->s = it->s + object_collision.normal * 1;
-//
-//                        float v_n = it->v * object_collision.normal;
-//                        float v_p = it->v * object_collision.normal.getPerpendicular();
-//
-//                        v_n = -v_n * scene_collision.other->e;
-//                        it->v = object_collision.normal * v_n + object_collision.normal.getPerpendicular() * v_p;
-//                    }
-//                }
+                else if (auto * other_s = dynamic_cast<StaticObject*>(J)) {
+                    auto object_collision = Boundary::intersects(it->boundaries, other_s->boundaries);
+                    if (object_collision.intersected) {
+                        it->s = it->s + object_collision.normal * 1;
+                        float v_n = it->v * object_collision.normal;
+                        float v_p = it->v * object_collision.normal.getPerpendicular();
+                        v_n = -v_n * object_collision.other->e;
+                        it->v = object_collision.normal * v_n + object_collision.normal.getPerpendicular() * v_p;
+                    }
+                }
             }
         }
         else if (auto * it_s = dynamic_cast<StaticObject*>(I)) {
@@ -189,7 +187,7 @@ void Application::game() {
                 ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5f;
                 ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5f;
             },
-            50,120);
+            100,120);
 
     box1->boundaries.count = 1;
     box1->boundaries.list = new Boundary * [1];
@@ -211,10 +209,10 @@ void Application::game() {
                 ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5f;
                 ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5f;
             },
-            10,120);
+            20,120);
 
-    box2->v.x = 100.0 / 100;
-    box2->v.y = 100.0 / 100;
+//    box2->v.x = 100.0 / 100;
+//    box2->v.y = 100.0 / 100;
 
     box2->boundaries.count = 1;
     box2->boundaries.list = new Boundary * [1];
@@ -225,6 +223,16 @@ void Application::game() {
 
     scene->addDrawable(box1);
     scene->addDrawable(box2);
+
+    auto * s2 = new StaticObject([] {
+        ST7735_FillRectangle(128 - 50, 0, 50,50,MAGENTA);
+    });
+
+    s2->boundaries.count = 1;
+    s2->boundaries.list = new Boundary * [1];
+    s2->boundaries.list[0] = new LineSegmentBoundary(128 - 50, 50, 128, 50);
+
+    scene->addDrawable(s2);
 
     OS_TASK_UNLOCK();
 

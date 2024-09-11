@@ -27,7 +27,7 @@ BINDIR = build
 
 TARGET = $(BINDIR)/phyzix.elf
 
-CFLAGS=-ggdb -Wl,-Map=$(BINDIR)/output.map -mthumb -mcpu=cortex-m3 -O0 -ffreestanding $(INCLUDES)
+CFLAGS=-ggdb -Wl,-Map=$(BINDIR)/output.map -ffunction-sections -fdata-sections -Wl,--gc-sections -mthumb -mcpu=cortex-m3 -O0 -ffreestanding $(INCLUDES)
 CPPFLAGS=-lstdc++
 ASMFLAGS=-ggdb -mthumb -mcpu=cortex-m3
 

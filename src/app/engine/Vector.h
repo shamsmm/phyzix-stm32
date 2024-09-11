@@ -74,8 +74,11 @@ public:
         return { magnitude * Math::cos(angle), magnitude * Math::sin(angle) };
     }
 
-    void print() {
-        printf("Vector x: %f, y: %f (%f, %f)\n", x, y, getMagnitude(), getDirection() * 180 / Math::PI);
+    void print(bool verbose = true) const {
+        if (verbose)
+            printf("Vector x: %f, y: %f (%f, %f)\n", x, y, getMagnitude(), getDirection() * 180 / Math::PI);
+        else
+            printf("%f |_ %f\n", getMagnitude(), getDirection() * 180 / Math::PI);
     }
 };
 
