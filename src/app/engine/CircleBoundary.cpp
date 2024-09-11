@@ -13,7 +13,7 @@ BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
 
         if(Math::pow(this->x - other->x, 2) + Math::pow(this->y - other->y, 2) < Math::pow(this->r + other->r, 2)) {
             // Intersects
-            return {true, Vector(this->x - other->x, this->y - other->y).getNormal(), this, o };
+            return {true, Vector(other->x - this->x, other->y - this->y).getNormal(), this, o };
         }
     } else if (dynamic_cast<LineSegmentBoundary *>(o)) {
         auto * it = dynamic_cast<LineSegmentBoundary *>(o);
@@ -21,6 +21,20 @@ BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
         double A = it->y2 - it->y1;
         double B = it->x1 - it->x2;
         double C = it->x2 * it->y1 - it->x1 * it->y2;
+
+        if (A == 0) {
+            // horizontal line
+            if (Math::fabs(this->y - (-C / B)) <= this->r) {
+                return {true, Vector(0, (-C / B) - this->y).getNormal(), this, o};
+            }
+        }
+
+        if (B == 0) {
+            // horizontal line
+            if (Math::fabs(this->x - (-C / A)) <= this->r) {
+                return {true, Vector(0, (-C / A) - this->x).getNormal(), this, o};
+            }
+        }
 
         //double distance = Math::fabs(A * this->x + B * this->y + C) / Math::sqrt(A * A + B * B);
 
@@ -39,9 +53,9 @@ BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
             float y1 = -A/B * x1 - C/B;
             float y2 = -A/B * x2 - C/B;
 
-            return {true, Vector(this->x - (x1 + x2) / 2, this->y - (y1 + y2) / 2).getNormal(), this, o};
+            return {true, Vector((x1 + x2) / 2 - this->x, (y1 + y2) / 2 - this->y).getNormal(), this, o};
         }
     }
 
-    return {false, Vector(0,0)};
+    return {};
 }

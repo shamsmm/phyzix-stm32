@@ -18,7 +18,7 @@ struct Boundaries {
 
 struct BoundaryIntersectionResult {
     bool intersected = false;
-    Vector normal;
+    Vector normal{0, 0};
     Boundary * it;
     Boundary * other;
 };

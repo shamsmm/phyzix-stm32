@@ -67,10 +67,10 @@ void boundary_tests() {
     auto * scene = new Scene(160, 256);
     scene->boundaries.list = new Boundary * [4];
     scene->boundaries.count = 4;
-    scene->boundaries.list[0] = new LineSegmentBoundary(0.0,0.0,1.0,160.0); // "|.."
-    scene->boundaries.list[1] = new LineSegmentBoundary(0.0,1.0,128,0.0); // "__"
-    scene->boundaries.list[2] = new LineSegmentBoundary(128,0.0,129,160.0); // "..|"
-    scene->boundaries.list[3] = new LineSegmentBoundary(0.0,160,128,161.0); // "^^"
+    scene->boundaries.list[0] = new LineSegmentBoundary(0.0,0.0,0,160.0); // "|.."
+    scene->boundaries.list[1] = new LineSegmentBoundary(0.0,0,128,0.0); // "__"
+    scene->boundaries.list[2] = new LineSegmentBoundary(128,0.0,128,160.0); // "..|"
+    scene->boundaries.list[3] = new LineSegmentBoundary(0.0,160,128,160.0); // "^^"
 
     CircleBoundary * b = new CircleBoundary(50,50,5);
 
