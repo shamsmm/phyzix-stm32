@@ -28,10 +28,9 @@ BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
 
         // Check if the distance is less than or equal to the radius
 //        if (distance <= this->r) {
-        float D = -C/B - this->y;
         float a = 1 + A*A / (B * B);
-        float b = -2 * this->x + 2 * A * D / B;
-        float c = this->x * this->x + D * D - this->r * this->r;
+        float b = -2 * this->x + 2 * A * C / (B * B) + 2 * A * this->y / B;
+        float c = this->x * this->x + C * C / (B * B) - 2 * C * this->y / B + 2 * C * this->y / B + this->y * this->y - this->r * this->r;
 
         float discriminant = b * b - 4 * a * c;
         if (discriminant >= 0) {
