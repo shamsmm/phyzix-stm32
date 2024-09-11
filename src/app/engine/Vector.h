@@ -24,6 +24,11 @@ public:
         return {this->x * scalar, this->y * scalar};
     }
 
+    float operator*(Vector other) const {
+        // dot product
+        return this->x * other.x + this->y * other.y;
+    }
+
     float getMagnitude() const {
         return Math::sqrt(Math::pow(this->x, 2) + Math::pow(this->y, 2));
     }
@@ -51,6 +56,10 @@ public:
     Vector getNormal() const {
         float magnitude = getMagnitude();
         return {this->x / magnitude, this->y / magnitude};
+    }
+
+    Vector getPerpendicular() const {
+        return {-this->y, this->x};
     }
 
     Vector getResolvedAround(Vector normal) const {

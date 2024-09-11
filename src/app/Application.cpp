@@ -24,11 +24,13 @@ void handle_physics(Scene * scene, float dt) {
 
             auto scene_collision = Boundary::intersects(it->boundaries, scene->boundaries);
             if (scene_collision.intersected) {
-                //it->v.print();
-                Vector v_normal = it->v.getResolvedAround(scene_collision.normal);
-                v_normal.y = -v_normal.y * scene_collision.other->e;
-                it->v = scene_collision.normal * v_normal.getMagnitude();
-                //it->v.print();
+                float v_normal = it->v * scene_collision.normal;
+                float v_perpendicular = it->v * scene_collision.normal.getPerpendicular(); // Dot product
+
+                it->s = it->s + scene_collision.normal * 1;
+                v_normal = -v_normal * scene_collision.other->e;
+
+                it->v = scene_collision.normal * v_normal + scene_collision.normal.getPerpendicular() * v_perpendicular; // Scalar product
             }
 
 //            for (size_t j = i; j < scene->drawableCount; ++j) {
@@ -124,14 +126,14 @@ void Application::game() {
                 // TODO fill only coordinates, for scene to re render background for example
                 ST7735_FillRectangle(x, y, 25,25,BLACK);
             },[] (Boundaries& boundaries, Vector& s) {
-                ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5;
-                ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5;
+                ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5f;
+                ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5f;
             },
             50,120);
 
     box1->boundaries.count = 1;
     box1->boundaries.list = new Boundary * [1];
-    box1->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 5);
+    box1->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 12.5);
     box1->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
         return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100);
     };
@@ -144,23 +146,23 @@ void Application::game() {
                 // TODO fill only coordinates, for scene to re render background for example
                 ST7735_FillRectangle(x, y, 25,25,BLACK);
             },[] (Boundaries& boundaries, Vector& s) {
-                ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5;
-                ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5;
+                ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5f;
+                ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5f;
             },
             10,120);
 
-    box2->v.x = 5.0 / 100;
-    box2->v.y = 200.0 / 100;
+    box2->v.x = 100.0 / 100;
+    box2->v.y = 100.0 / 100;
 
     box2->boundaries.count = 1;
     box2->boundaries.list = new Boundary * [1];
-    box2->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 5);
+    box2->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 12.5);
     box2->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
         return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100);
     };
 
     scene->addDrawable(box1);
-//    scene->addDrawable(box2);
+    scene->addDrawable(box2);
 
     OS_TASK_UNLOCK();
 
