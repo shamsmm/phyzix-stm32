@@ -24,13 +24,13 @@ void handle_physics(Scene * scene, float dt) {
 
             auto scene_collision = Boundary::intersects(it->boundaries, scene->boundaries);
             if (scene_collision.intersected) {
-                float v_normal = it->v * scene_collision.normal;
-                float v_perp = it->v * scene_collision.normal.getPerpendicular(); // Dot product
+                float v_n = it->v * scene_collision.normal;
+                float v_p = it->v * scene_collision.normal.getPerpendicular(); // Dot product
 
                 it->s = it->s + scene_collision.normal * 1;
-                v_normal = -v_normal * scene_collision.other->e;
+                v_n = -v_n * scene_collision.other->e;
 
-                it->v = scene_collision.normal * v_normal + scene_collision.normal.getPerpendicular() * v_perp; // Scalar product
+                it->v = scene_collision.normal * v_n + scene_collision.normal.getPerpendicular() * v_p; // Scalar product
             }
 
             for (size_t j = i + 1; j < scene->drawableCount; ++j) {
@@ -66,6 +66,35 @@ void handle_physics(Scene * scene, float dt) {
 
                         it->v = object_collision.normal * v1_n + object_collision.normal.getPerpendicular() * v1_p;
                         other->v = object_collision.normal * v2_n + object_collision.normal.getPerpendicular() * v2_p;
+                    }
+                }
+//                else if (auto * other_s = dynamic_cast<StaticObject*>(J)) {
+//                    auto object_collision = Boundary::intersects(it->boundaries, other_s->boundaries);
+//                    if (object_collision.intersected) {
+//                        it->s = it->s + object_collision.normal * 1;
+//
+//                        float v_n = it->v * object_collision.normal;
+//                        float v_p = it->v * object_collision.normal.getPerpendicular();
+//
+//                        v_n = -v_n * scene_collision.other->e;
+//                        it->v = object_collision.normal * v_n + object_collision.normal.getPerpendicular() * v_p;
+//                    }
+//                }
+            }
+        }
+        else if (auto * it_s = dynamic_cast<StaticObject*>(I)) {
+            for (size_t j = i + 1; j < scene->drawableCount; ++j) {
+                auto J = scene->drawables[j];
+                if (auto * other = dynamic_cast<DynamicObject*>(J)) {
+                    auto object_collision = Boundary::intersects(other->boundaries, it_s->boundaries);
+                    if (object_collision.intersected) {
+                        other->s = other->s + object_collision.normal * 1;
+
+                        float v_n = other->v * object_collision.normal;
+                        float v_p = other->v * object_collision.normal.getPerpendicular();
+
+                        v_n = -v_n * object_collision.other->e;
+                        other->v = object_collision.normal * v_n + object_collision.normal.getPerpendicular() * v_p;
                     }
                 }
             }
@@ -137,9 +166,15 @@ void Application::game() {
     scene->boundaries.list[3] = new LineSegmentBoundary(0.0,160,128,160.0);
     camera = new Camera(160, 128);
 
-    scene->addDrawable(new StaticObject([] {
+    auto * s1 = new StaticObject([] {
         ST7735_FillRectangle(0, 0, 25,25,GREEN);
-    }));
+    });
+
+    s1->boundaries.count = 1;
+    s1->boundaries.list = new Boundary * [1];
+    s1->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 12.5);
+
+    scene->addDrawable(s1);
 
     auto * box1 = new DynamicObject(
             [] (float x, float y) {
@@ -148,7 +183,9 @@ void Application::game() {
             [] (float x, float y) {
                 // TODO fill only coordinates, for scene to re render background for example
                 ST7735_FillRectangle(x, y, 25,25,BLACK);
-            },[] (Boundaries& boundaries, Vector& s) {
+            },
+            [] (Boundaries& boundaries, Vector& s) {
+                ((CircleBoundary *) boundaries.list[0])->r = 12.5f;
                 ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5f;
                 ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5f;
             },
@@ -156,7 +193,7 @@ void Application::game() {
 
     box1->boundaries.count = 1;
     box1->boundaries.list = new Boundary * [1];
-    box1->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 12.5);
+    box1->boundaries.list[0] = new CircleBoundary();
     box1->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
         return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100);
     };
@@ -168,7 +205,9 @@ void Application::game() {
             [] (float x, float y) {
                 // TODO fill only coordinates, for scene to re render background for example
                 ST7735_FillRectangle(x, y, 25,25,BLACK);
-            },[] (Boundaries& boundaries, Vector& s) {
+            },
+            [] (Boundaries& boundaries, Vector& s) {
+                ((CircleBoundary *) boundaries.list[0])->r = 12.5f;
                 ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5f;
                 ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5f;
             },
@@ -179,7 +218,7 @@ void Application::game() {
 
     box2->boundaries.count = 1;
     box2->boundaries.list = new Boundary * [1];
-    box2->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 12.5);
+    box2->boundaries.list[0] = new CircleBoundary();
     box2->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
         return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100 /*- 0.005 * m *v_y*/);
     };

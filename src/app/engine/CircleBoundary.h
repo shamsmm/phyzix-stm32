@@ -16,6 +16,7 @@ public:
     float r;
 
     CircleBoundary(float x, float y, float r): x(x), y(y), r(r) {}
+    CircleBoundary() {}
 
     BoundaryIntersectionResult intersects(Boundary * o) override;
 };

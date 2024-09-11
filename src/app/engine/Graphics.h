@@ -2,19 +2,17 @@
 // Created by shams on 8/7/24.
 //
 
-#ifndef PHYZIX_STATICOBJECT_H
-#define PHYZIX_STATICOBJECT_H
+#ifndef PHYZIX_GRAPHICSOBJECT_H
+#define PHYZIX_GRAPHICSOBJECT_H
 
+
+#include <functional>
 #include "Drawable.h"
-#include "Boundary.h"
 
-class StaticObject: public Drawable {
+class Graphics: public Drawable {
 public:
-    float zIndex = 0;
-    Boundaries boundaries;
-
     // Constructor takes a callable to implement the draw method
-    StaticObject( void (*drawFunction)())
+    Graphics( void (*drawFunction)())
             : drawFunction(drawFunction) {}
 
     // Override the draw method from the base class
@@ -27,4 +25,4 @@ private:
 };
 
 
-#endif //PHYZIX_STATICOBJECT_H
+#endif //PHYZIX_GRAPHICSOBJECT_H

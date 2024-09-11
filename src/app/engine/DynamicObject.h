@@ -33,7 +33,9 @@ public:
             float x,
             float y
     )
-    : drawFunction(drawFunction), blackOutFunction(blackOutFunction), updateBoundaryFunction(boundaryUpdateFunction), s(Vector(x, y)) {}
+    : drawFunction(drawFunction), blackOutFunction(blackOutFunction), updateBoundaryFunction(boundaryUpdateFunction), s(Vector(x, y)) {
+        this->updateBoundaryFunction(boundaries, s);
+    }
 
     // Override the draw method from the base class
     void draw() const override {
