@@ -53,9 +53,11 @@ void math_tests() {
     assert(ALMOST_EQUALS_LOOSELY(Math::cos(0.456), cos(0.456)));
     assert(ALMOST_EQUALS_LOOSELY(Math::cos(2 * M_PI), cos(0)));
     assert(ALMOST_EQUALS_LOOSELY(Math::sin(1.45), sin(1.45)));
-//    printf("%f vs %f\n", Math::tan(4.45), tan(4.45));
 
-
+    assert(ALMOST_EQUALS_LOOSELY(Math::atan(1), atan(1)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::atan(0.1), atan(0.1)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::atan(8), atan(8)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::atan(10), atan(10)));
 }
 
 void boundary_tests() {
