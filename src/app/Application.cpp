@@ -20,7 +20,7 @@ void handle_physics(Scene * scene, float dt) {
             it->v = it->v + it->a * dt;
             it->updateBoundaryFunction(it->boundaries, it->s);
 
-            it->a = it->forceFunction(it->s.x, it->s.y, it->a.x, it->s.y, it->m) * (1 / it->m);
+            it->a = it->forceFunction(it->s.x, it->s.y, it->v.x, it->v.y, it->m) * (1 / it->m);
 
             auto scene_collision = Boundary::intersects(it->boundaries, scene->boundaries);
             if (scene_collision.intersected) {
@@ -181,7 +181,7 @@ void Application::game() {
     box2->boundaries.list = new Boundary * [1];
     box2->boundaries.list[0] = new CircleBoundary(12.5, 12.5, 12.5);
     box2->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
-        return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100);
+        return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100 /*- 0.005 * m *v_y*/);
     };
 
     scene->addDrawable(box1);
