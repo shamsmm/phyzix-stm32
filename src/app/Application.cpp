@@ -41,23 +41,31 @@ void handle_physics(Scene * scene, float dt) {
                         it->s = it->s + object_collision.normal * 1;
                         other->s = other->s + object_collision.normal * -1;
 
+                        float v1_n = it->v * object_collision.normal;
+                        float v2_n = other->v * object_collision.normal;
+                        float v1_p = it->v * object_collision.normal.getPerpendicular();
+                        float v2_p = other->v * object_collision.normal.getPerpendicular();
+
                         // Momentum Conservation
                         float m1 = it->m;
                         float m2 = other->m;
                         float v1, v2;
-                        float e = 1;
+                        float e = (object_collision.it->e + object_collision.other->e) / 2; // TODO: collision policy
 
                         // Momentum conservation around the normal
-                        v1 = it->v.x;
-                        v2 = other->v.x;
-                        it->v.x = ((m1 - e * m2) * v1 + (1 + e) * m2 * v2) / (m1 + m2);
-                        other->v.x = ((m2 - e * m1) * v2 + (1 + e) * m1 * v1) / (m1 + m2);
+                        v1 = v1_n;
+                        v2 = v2_n;
+                        v1_n = ((m1 - e * m2) * v1 + (1 + e) * m2 * v2) / (m1 + m2);
+                        v2_n = ((m2 - e * m1) * v2 + (1 + e) * m1 * v1) / (m1 + m2);
 
                         // Momentum conservation around the perpendicular
-                        v1 = it->v.y;
-                        v2 = other->v.y;
-                        it->v.y = ((m1 - e * m2) * v1 + (1 + e) * m2 * v2) / (m1 + m2);
-                        other->v.y = ((m2 - e * m1) * v2 + (1 + e) * m1 * v1) / (m1 + m2);
+                        v1 = v1_p;
+                        v2 = v2_p;
+                        v1_p = ((m1 - m2) * v1 + 2 * m2 * v2) / (m1 + m2);
+                        v2_p = ((m2 - m1) * v2 + 2 * m1 * v1) / (m1 + m2);
+
+                        it->v = object_collision.normal * v1_n + object_collision.normal.getPerpendicular() * v1_p;
+                        other->v = object_collision.normal * v2_n + object_collision.normal.getPerpendicular() * v2_p;
                     }
                 }
             }
