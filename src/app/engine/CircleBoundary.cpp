@@ -25,6 +25,7 @@ BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
         if (A == 0) {
             // horizontal line
             if (Math::fabs(this->y - (-C / B)) <= this->r) {
+                // Intersects
                 return {true, Vector(0, (-C / B) - this->y).getNormal(), this, o};
             }
         }
@@ -32,14 +33,11 @@ BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
         if (B == 0) {
             // horizontal line
             if (Math::fabs(this->x - (-C / A)) <= this->r) {
+                // Intersects
                 return {true, Vector(0, (-C / A) - this->x).getNormal(), this, o};
             }
         }
 
-        //double distance = Math::fabs(A * this->x + B * this->y + C) / Math::sqrt(A * A + B * B);
-
-        // Check if the distance is less than or equal to the radius
-//        if (distance <= this->r) {
         float D = C / B - this->y;
         float a = 1 + A*A / (B * B);
         float b = -2 * this->x + 2 * A * D / B;
@@ -47,6 +45,7 @@ BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
 
         float discriminant = b * b - 4 * a * c;
         if (discriminant >= 0) {
+            // Intersects
             float sqrtDiscriminant = Math::sqrt(discriminant);
             float x1 = (-b + sqrtDiscriminant) / (2 * a);
             float x2 = (-b - sqrtDiscriminant) / (2 * a);
