@@ -47,9 +47,28 @@ void handle_physics(Scene * scene, float dt) {
                         it->s = it->s + object_collision.normal * 1;
                         other->s = other->s + object_collision.normal * -1;
 
-                        // TODO: Momentum conservation
-                        it_v_normal = -it_v_normal * object_collision.other->e;
-                        other_v_normal = -other_v_normal * object_collision.it->e;
+                        // w/o momentum conservation (easy but not realistic)
+                        //it_v_normal = -it_v_normal * object_collision.other->e;
+                        //other_v_normal = -other_v_normal * object_collision.it->e;
+
+                        // Momentum Conservation
+                        float m1 = it->m;
+                        float m2 = other->m;
+                        float v1, v2;
+                        float total_momentum, total_kinetic_energy;
+                        float e = (object_collision.it->e + object_collision.other->e) / 2;
+
+                        // Momentum conservation around the normal
+                        v1 = it_v_normal;
+                        v2 = other_v_normal;
+                        it_v_normal = ((m1 - e * m2) * v1 + (1 + e) * m2 * v2) / (m1 + m2);
+                        other_v_normal = ((m2 - e * m1) * v2 + (1 + e) * m1 * v1) / (m1 + m2);
+
+                        // Momentum conservation around the perpendicular
+                        v1 = it_v_perp;
+                        v2 = other_v_perp;
+                        it_v_perp = (v1 * (m1 - m2) + 2 * m2 * v2) / (m1 + m2);
+                        other_v_perp = (v2 * (m2 - m1) + 2 * m1 * v1) / (m1 + m2);
 
                         it->v = object_collision.normal * it_v_normal + object_collision.normal.getPerpendicular() * it_v_perp;
                         other->v = (object_collision.normal * -1) * other_v_normal + (object_collision.normal * -1).getPerpendicular() * other_v_perp;
