@@ -25,27 +25,37 @@ void handle_physics(Scene * scene, float dt) {
             auto scene_collision = Boundary::intersects(it->boundaries, scene->boundaries);
             if (scene_collision.intersected) {
                 float v_normal = it->v * scene_collision.normal;
-                float v_perpendicular = it->v * scene_collision.normal.getPerpendicular(); // Dot product
+                float v_perp = it->v * scene_collision.normal.getPerpendicular(); // Dot product
 
                 it->s = it->s + scene_collision.normal * 1;
                 v_normal = -v_normal * scene_collision.other->e;
 
-                it->v = scene_collision.normal * v_normal + scene_collision.normal.getPerpendicular() * v_perpendicular; // Scalar product
+                it->v = scene_collision.normal * v_normal + scene_collision.normal.getPerpendicular() * v_perp; // Scalar product
             }
 
-//            for (size_t j = i; j < scene->drawableCount; ++j) {
-//                auto J = scene->drawables[j];
-//                if (auto * other = dynamic_cast<DynamicObject*>(J)) {
-//                    auto object_collision = Boundary::intersects(it->boundaries, it->boundaryCount, other->boundaries, other->boundaryCount);
-//                    if (object_collision.intersects) {
-//                        it->v_x = -it->v_x;
-//                        it->v_y = -it->v_y;
-//
-//                        other->v_x = -other->v_x;
-//                        other->v_y = -other->v_y;
-//                    }
-//                }
-//            }
+            for (size_t j = i + 1; j < scene->drawableCount; ++j) {
+                auto J = scene->drawables[j];
+                if (auto * other = dynamic_cast<DynamicObject*>(J)) {
+                    auto object_collision = Boundary::intersects(it->boundaries, other->boundaries);
+                    if (object_collision.intersected) {
+                        float it_v_normal = it->v * object_collision.normal;
+                        float it_v_perp = it->v * object_collision.normal.getPerpendicular();
+
+                        float other_v_normal = other->v * (object_collision.normal * -1);
+                        float other_v_perp = other->v * (object_collision.normal * -1).getPerpendicular();
+
+                        it->s = it->s + object_collision.normal * 1;
+                        other->s = other->s + object_collision.normal * -1;
+
+                        // TODO: Momentum conservation
+                        it_v_normal = -it_v_normal * object_collision.other->e;
+                        other_v_normal = -other_v_normal * object_collision.it->e;
+
+                        it->v = object_collision.normal * it_v_normal + object_collision.normal.getPerpendicular() * it_v_perp;
+                        other->v = (object_collision.normal * -1) * other_v_normal + (object_collision.normal * -1).getPerpendicular() * other_v_perp;
+                    }
+                }
+            }
         }
     }
 }
