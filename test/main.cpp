@@ -13,6 +13,7 @@ volatile uint32_t Tick;
 using namespace std;
 
 #define ALMOST_EQUALS(x,y) fabs(x - y) < 0.001
+#define ALMOST_EQUALS_LOOSELY(x,y) fabs(x - y) < 0.01
 
 void math_tests();
 void boundary_tests();
@@ -42,6 +43,19 @@ void math_tests() {
     assert(ALMOST_EQUALS(Math::sqrt(4), sqrt(4)));
     assert(ALMOST_EQUALS(Math::sqrt(2.5), sqrt(2.5)));
     assert(ALMOST_EQUALS(Math::sqrt(100), sqrt(100)));
+
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(0), cos(0)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(M_PI), cos(M_PI)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(M_PI + 0.5), cos(M_PI + 0.5)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(2 * M_PI + 0.5), cos(2 * M_PI + 0.5)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(M_PI/2), cos(M_PI/2)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(3.223), cos(3.223)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(0.456), cos(0.456)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(2 * M_PI), cos(0)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::sin(1.45), sin(1.45)));
+//    printf("%f vs %f\n", Math::tan(4.45), tan(4.45));
+
+
 }
 
 void boundary_tests() {
