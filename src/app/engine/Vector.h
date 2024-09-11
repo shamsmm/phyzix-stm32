@@ -29,14 +29,22 @@ public:
     }
 
     float getDirection() const {
-        if (Math::sign(x) == 1 && Math::sign(y) == 1) {
-            return Math::atan(y, x);
-        } else if (Math::sign(x) == -1 && Math::sign(y) == 1) {
-            return Math::PI - Math::atan(y, x);
-        } else if (Math::sign(x) == -1 && Math::sign(y) == -1) {
-            return Math::PI + Math::PI / 2 - Math::atan(y, x);
-        } else if (Math::sign(x) == 1 && Math::sign(y) == -1) {
-            return 2 * Math::PI - Math::atan(y, x);
+        if (Math::sign(y) == 1) {
+            if (Math::sign(x) == 1) {
+                // First Quad
+                return Math::atan(y, x);
+            } else {
+                // Second Quad
+                return Math::PI - Math::atan(y, x);
+            }
+        } else {
+            if (Math::sign(x) == 1) {
+                // Fourth Quad
+                return Math::PI + Math::PI - Math::atan(y, x);
+            } else {
+                // Third Quad
+                return Math::PI + Math::atan(y, x);
+            }
         }
     }
 

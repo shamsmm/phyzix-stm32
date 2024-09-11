@@ -24,11 +24,10 @@ void handle_physics(Scene * scene, float dt) {
 
             auto scene_collision = Boundary::intersects(it->boundaries, scene->boundaries);
             if (scene_collision.intersected) {
-
                 //it->v.print();
                 Vector v_normal = it->v.getResolvedAround(scene_collision.normal);
                 v_normal.y = -v_normal.y * scene_collision.other->e;
-                it->v = v_normal.getUnResolvedFrom(scene_collision.normal);
+                it->v = scene_collision.normal * v_normal.getMagnitude();
                 //it->v.print();
             }
 
@@ -99,7 +98,7 @@ void Application::game() {
     OS_TASK_LOCK();
     fillScreen(BLACK);
 
-    ST7735_WriteString(0, 18 + 1, "HEllo", Font_11x18, RED,BLACK);
+    ST7735_WriteString(0, 18 + 1, "PhyziX", Font_11x18, RED,BLACK);
     // TODO: move logic to other class or something
 
 

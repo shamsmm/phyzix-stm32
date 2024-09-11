@@ -96,6 +96,16 @@ void vector_tests() {
     Vector a_wall = Vector(-sqrt(2) * sin(atan(1/1) - Math::PI), sqrt(2) * cos(atan(1/1) - Math::PI));
     assert(ALMOST_EQUALS_LOOSELY(a_wall.x, a.getResolvedAround(wall).x));
     assert(ALMOST_EQUALS_LOOSELY(a_wall.y, a.getResolvedAround(wall).y));
+
+    Vector v = {0, -10};
+    Vector ground = {0, 1};
+    Vector v_g = v.getResolvedAround(ground);
+    v_g.y *= -1;
+    v = v_g.getUnResolvedFrom(ground);
+    assert(v.y == 10);
+
+    Vector c = {0, -1};
+    assert(ALMOST_EQUALS(c.getDirection(), 270 * 2 * Math::PI/360));
 }
 
 void boundary_tests() {

@@ -1,3 +1,4 @@
+#if defined(ENABLE_OLED_MODULE)
 #include "oled.h"
 #include "graphics/fonts.h"
 
@@ -76,3 +77,4 @@ void OLED_I2C_Write(unsigned char col, unsigned char page, char * ptr) {
 
     I2C_End();
 }
+#endif
