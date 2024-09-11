@@ -7,6 +7,7 @@
 
 
 #include "app/math/Math.h"
+#include <cstdio>
 
 class Vector {
 public:
@@ -27,9 +28,31 @@ public:
         return Math::sqrt(Math::pow(this->x, 2) + Math::pow(this->y, 2));
     }
 
+    float getDirection() const {
+        if (Math::sign(x) == 1 && Math::sign(y) == 1) {
+            return Math::atan(y/x);
+        } else if (Math::sign(x) == -1 && Math::sign(y) == 1) {
+            return Math::PI - Math::atan(y/x);
+        } else if (Math::sign(x) == -1 && Math::sign(y) == -1) {
+            return Math::PI + Math::PI / 2 - Math::atan(y/x);
+        } else if (Math::sign(x) == 1 && Math::sign(y) == -1) {
+            return 2 * Math::PI - Math::atan(y/x);
+        }
+    }
+
     Vector getNormal() const {
         float magnitude = getMagnitude();
         return {this->x / magnitude, this->y / magnitude};
+    }
+
+    Vector getResolvedAround(Vector normal) const {
+        float magnitude = getMagnitude();
+        float angle = this->getDirection() - normal.getDirection();
+        return { -magnitude * Math::sin(angle), magnitude * Math::cos(angle) };
+    }
+
+    void print() {
+        printf("Vector x: %f, y: %f (%f, %f)\n", x, y, getMagnitude(), getDirection() * 180 / Math::PI);
     }
 };
 

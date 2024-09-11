@@ -16,6 +16,7 @@ using namespace std;
 #define ALMOST_EQUALS_LOOSELY(x,y) fabs(x - y) < 0.01
 
 void math_tests();
+void vector_tests();
 void boundary_tests();
 
 int main() {
@@ -23,6 +24,9 @@ int main() {
 
     cout << "=================== Maths Tests.              ===================" << endl;
     math_tests();
+
+    cout << "=================== Vector Tests.              ===================" << endl;
+    vector_tests();
 
     cout << "=================== Boundary Tests.           ===================" << endl;
     boundary_tests();
@@ -53,11 +57,45 @@ void math_tests() {
     assert(ALMOST_EQUALS_LOOSELY(Math::cos(0.456), cos(0.456)));
     assert(ALMOST_EQUALS_LOOSELY(Math::cos(2 * M_PI), cos(0)));
     assert(ALMOST_EQUALS_LOOSELY(Math::sin(1.45), sin(1.45)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(-0), cos(-0)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(-M_PI), cos(-M_PI)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(-M_PI -0.5), cos(-M_PI - 0.5)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(-2 * M_PI - 0.5), cos(-2 * M_PI - 0.5)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(-M_PI/2), cos(-M_PI/2)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(-3.223), cos(-3.223)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(-0.456), cos(-0.456)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::cos(-2 * M_PI), cos(-0)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::sin(-1.45), sin(-1.45)));
 
     assert(ALMOST_EQUALS_LOOSELY(Math::atan(1), atan(1)));
     assert(ALMOST_EQUALS_LOOSELY(Math::atan(0.1), atan(0.1)));
     assert(ALMOST_EQUALS_LOOSELY(Math::atan(8), atan(8)));
     assert(ALMOST_EQUALS_LOOSELY(Math::atan(10), atan(10)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::atan(-1), atan(-1)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::atan(-0.1), atan(-0.1)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::atan(-8), atan(-8)));
+    assert(ALMOST_EQUALS_LOOSELY(Math::atan(-10), atan(-10)));
+}
+
+void vector_tests() {
+
+    Vector a = {1,1};
+    assert(ALMOST_EQUALS_LOOSELY(a.getDirection(), atan(1.0/1)));
+    assert(ALMOST_EQUALS_LOOSELY(a.getMagnitude(), sqrt(2)));
+
+    Vector b = {3,4};
+    assert(ALMOST_EQUALS_LOOSELY(b.getDirection(), atan(4.0/3)));
+    assert(ALMOST_EQUALS_LOOSELY(b.getMagnitude(), 5));
+
+    Vector x = {1, 0};
+    Vector a_x = Vector(-sqrt(2) * sin(atan(1/1) - 0), sqrt(2) * cos(atan(1/1) - 0));
+    assert(ALMOST_EQUALS_LOOSELY(a_x.x, a.getResolvedAround(x).x));
+    assert(ALMOST_EQUALS_LOOSELY(a_x.y, a.getResolvedAround(x).y));
+
+    Vector wall = {-1,0};
+    Vector a_wall = Vector(-sqrt(2) * sin(atan(1/1) - Math::PI), sqrt(2) * cos(atan(1/1) - Math::PI));
+    assert(ALMOST_EQUALS_LOOSELY(a_wall.x, a.getResolvedAround(wall).x));
+    assert(ALMOST_EQUALS_LOOSELY(a_wall.y, a.getResolvedAround(wall).y));
 }
 
 void boundary_tests() {

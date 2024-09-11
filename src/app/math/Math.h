@@ -43,6 +43,10 @@ public:
         return n < 0 ? -n : n;
     }
 
+    static int abs(int n) {
+        return n < 0 ? -n : n;
+    }
+
     static float sqrt(float n) {
         if (n == 0) return 0;
 
@@ -72,12 +76,16 @@ public:
         return cosine[(int) (0.5 + 500 * angle / (2 * PI))];
     }
 
+    static int sign(float x) {
+        return x >= 0 ? 1 : -1;
+    }
+
     static float sin(float angle) {
         return cos(angle - PI/2);
     }
 
     static float atan(float m) {
-        return arctan[min( int(m * (500 / 10) + 0.5), 499)];
+        return sign(m) * arctan[min(int(abs(m * (500 / 10)) + 0.5), 499)];
     }
 
 private:
