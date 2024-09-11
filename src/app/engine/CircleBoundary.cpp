@@ -2,6 +2,7 @@
 // Created by shams on 8/8/24.
 //
 
+#include <cstdio>
 #include "CircleBoundary.h"
 #include "app/math/Math.h"
 #include "LineSegmentBoundary.h"
@@ -11,9 +12,10 @@ BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
         auto * other = dynamic_cast<CircleBoundary*>(o);
 
         if(Math::pow(this->x - other->x, 2) + Math::pow(this->y - other->y, 2) < Math::pow(this->r + other->r, 2)) {
+            printf("C vs C good\n");
             // Intersects
-            Vector normal = Vector(this->x - other->x, this->y - other->y).getNormal();
-            return {true, normal, this, o };
+            Vector normal = Vector(/*this->x - other->x*/ 123, this->y - other->y)/*.getNormal()*/;
+            return {true, Vector(4,4), this, o };
         }
     } else if (dynamic_cast<LineSegmentBoundary *>(o)) {
         auto * it = dynamic_cast<LineSegmentBoundary *>(o);
@@ -26,9 +28,9 @@ BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
 
         // Check if the distance is less than or equal to the radius
 //        if (distance <= this->r) {
-        float D = (C / B) + this->y;
-        float a = 1 + (A * A) / (B * B);
-        float b = -2 * this->x - 2 * (A * D) / B;
+        float D = -C/B - this->y;
+        float a = 1 + A*A / (B * B);
+        float b = -2 * this->x + 2 * A * D / B;
         float c = this->x * this->x + D * D - this->r * this->r;
 
         float discriminant = b * b - 4 * a * c;
@@ -38,11 +40,12 @@ BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
             float x2 = (-b - sqrtDiscriminant) / (2 * a);
             float y1 = -A/B * x1 - C/B;
             float y2 = -A/B * x2 - C/B;
-
+            printf("C vs L good\n");
 
             return {true, Vector(this->x - (x1 + x2) / 2, this->y - (y1 + y2) / 2).getNormal(), this, o};
         }
     }
 
-    return {};
+    printf("C vs O not good\n");
+    return {false, Vector(0,0)};
 }

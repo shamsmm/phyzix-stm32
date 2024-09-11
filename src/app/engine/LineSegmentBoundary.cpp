@@ -44,5 +44,5 @@ BoundaryIntersectionResult LineSegmentBoundary::intersects(Boundary *other) {
         }
     }
 
-    return {};
+    return {false, Vector(0,0)};
 }
