@@ -30,13 +30,13 @@ public:
 
     float getDirection() const {
         if (Math::sign(x) == 1 && Math::sign(y) == 1) {
-            return Math::atan(y/x);
+            return Math::atan(y, x);
         } else if (Math::sign(x) == -1 && Math::sign(y) == 1) {
-            return Math::PI - Math::atan(y/x);
+            return Math::PI - Math::atan(y, x);
         } else if (Math::sign(x) == -1 && Math::sign(y) == -1) {
-            return Math::PI + Math::PI / 2 - Math::atan(y/x);
+            return Math::PI + Math::PI / 2 - Math::atan(y, x);
         } else if (Math::sign(x) == 1 && Math::sign(y) == -1) {
-            return 2 * Math::PI - Math::atan(y/x);
+            return 2 * Math::PI - Math::atan(y, x);
         }
     }
 

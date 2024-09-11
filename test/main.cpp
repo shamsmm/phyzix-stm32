@@ -20,18 +20,18 @@ void vector_tests();
 void boundary_tests();
 
 int main() {
-    cout << "=================== Tests started.            ===================" << endl;
+    cout << "=================== Tests **STARTED**.            ===================" << endl;
 
-    cout << "=================== Maths Tests.              ===================" << endl;
+    cout << "=================== Maths Tests.                  ===================" << endl;
     math_tests();
 
-    cout << "=================== Vector Tests.              ===================" << endl;
+    cout << "=================== Vector Tests.                 ===================" << endl;
     vector_tests();
 
-    cout << "=================== Boundary Tests.           ===================" << endl;
+    cout << "=================== Boundary Tests.               ===================" << endl;
     boundary_tests();
 
-    cout << "=================== Tests ended successfully. ===================" << endl;
+    cout << "=================== Tests **ENDED** successfully. ===================" << endl;
 }
 
 void math_tests() {
@@ -135,6 +135,7 @@ void boundary_tests() {
 
     b->x = 2;
     assert(b->intersects(scene->boundaries.list[0]).intersected);
+    assert(b->intersects(scene->boundaries.list[0]).normal.getDirection() == 0);
     assert(!b->intersects(scene->boundaries.list[1]).intersected);
     assert(!b->intersects(scene->boundaries.list[2]).intersected);
     assert(!b->intersects(scene->boundaries.list[3]).intersected);
@@ -143,6 +144,7 @@ void boundary_tests() {
     assert(!b->intersects(scene->boundaries.list[0]).intersected);
     assert(!b->intersects(scene->boundaries.list[1]).intersected);
     assert(b->intersects(scene->boundaries.list[2]).intersected);
+    assert(b->intersects(scene->boundaries.list[2]).normal.getDirection() == Math::PI);
     assert(!b->intersects(scene->boundaries.list[3]).intersected);
 
 }

@@ -88,6 +88,13 @@ public:
         return sign(m) * arctan[min(int(abs(m * (500 / 10)) + 0.5), 499)];
     }
 
+    static float atan(float y, float x) {
+        if (x == 0)
+            return PI/2;
+
+        return atan(y/x);
+    }
+
 private:
     static constexpr float cosine[500] = {
             1.0,
