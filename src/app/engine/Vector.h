@@ -51,6 +51,12 @@ public:
         return { -magnitude * Math::sin(angle), magnitude * Math::cos(angle) };
     }
 
+    Vector getUnResolvedFrom(Vector normal) const {
+        float magnitude = getMagnitude();
+        float angle = normal.getDirection();
+        return { magnitude * Math::cos(angle), magnitude * Math::sin(angle) };
+    }
+
     void print() {
         printf("Vector x: %f, y: %f (%f, %f)\n", x, y, getMagnitude(), getDirection() * 180 / Math::PI);
     }

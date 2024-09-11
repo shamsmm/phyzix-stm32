@@ -16,8 +16,6 @@ void handle_physics(Scene * scene, float dt) {
         auto I = scene->drawables[i];
 
         if (auto * it = dynamic_cast<DynamicObject*>(I)) {
-            printf("v_y: %f\n", it->v.y);
-
             it->s = it->s + it->v * dt;
             it->v = it->v + it->a * dt;
             it->updateBoundaryFunction(it->boundaries, it->s);
@@ -26,11 +24,12 @@ void handle_physics(Scene * scene, float dt) {
 
             auto scene_collision = Boundary::intersects(it->boundaries, scene->boundaries);
             if (scene_collision.intersected) {
-                //it->x = 50;
-                //it->y = 50;
-                //it->v_x = -it->v_x;
-                //it->v_x = 0;
-                //it->v_y = -it->v_y * scene_collision.other->e;
+
+                //it->v.print();
+                Vector v_normal = it->v.getResolvedAround(scene_collision.normal);
+                v_normal.y = -v_normal.y * scene_collision.other->e;
+                it->v = v_normal.getUnResolvedFrom(scene_collision.normal);
+                //it->v.print();
             }
 
 //            for (size_t j = i; j < scene->drawableCount; ++j) {
@@ -55,7 +54,7 @@ void Application::update() {
 
     while (true) {
         if (scene) {
-            handle_physics(scene, (Tick - Application::last_tick) * 10);
+            handle_physics(scene, (Tick - Application::last_tick) * 1);
         }
 
         last_tick = Tick;
@@ -110,7 +109,6 @@ void Application::game() {
     scene->boundaries.count = 4;
     scene->boundaries.list[0] = new LineSegmentBoundary(0.0,0.0,0.0,160.0);
     scene->boundaries.list[1] = new LineSegmentBoundary(0.0,0.0,128,0.0);
-    scene->boundaries.list[1]->e = 0.5;
     scene->boundaries.list[2] = new LineSegmentBoundary(128,0.0,128,160.0);
     scene->boundaries.list[3] = new LineSegmentBoundary(0.0,160,128,160.0);
     camera = new Camera(160, 128);
@@ -127,8 +125,8 @@ void Application::game() {
                 // TODO fill only coordinates, for scene to re render background for example
                 ST7735_FillRectangle(x, y, 25,25,BLACK);
             },[] (Boundaries& boundaries, Vector& s) {
-                ((CircleBoundary *) boundaries.list[0])->x = s.x + 25;
-                ((CircleBoundary *) boundaries.list[0])->y = s.y;
+                ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5;
+                ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5;
             },
             50,120);
 
@@ -147,10 +145,13 @@ void Application::game() {
                 // TODO fill only coordinates, for scene to re render background for example
                 ST7735_FillRectangle(x, y, 25,25,BLACK);
             },[] (Boundaries& boundaries, Vector& s) {
-                ((CircleBoundary *) boundaries.list[0])->x = s.x;
-                ((CircleBoundary *) boundaries.list[0])->y = s.y;
+                ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5;
+                ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5;
             },
             10,120);
+
+    box2->v.x = 5.0 / 100;
+    box2->v.y = 200.0 / 100;
 
     box2->boundaries.count = 1;
     box2->boundaries.list = new Boundary * [1];
@@ -160,7 +161,7 @@ void Application::game() {
     };
 
     scene->addDrawable(box1);
-    scene->addDrawable(box2);
+//    scene->addDrawable(box2);
 
     OS_TASK_UNLOCK();
 

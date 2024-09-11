@@ -25,7 +25,7 @@ struct BoundaryIntersectionResult {
 
 class Boundary{
 public:
-    float e = 0.5;
+    float e = 0.3;
 
     virtual BoundaryIntersectionResult intersects(Boundary * other) = 0;
 
