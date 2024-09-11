@@ -211,8 +211,8 @@ void Application::game() {
             },
             20,120);
 
-//    box2->v.x = 100.0 / 100;
-//    box2->v.y = 100.0 / 100;
+    box2->v.x = 100.0 / 100;
+    box2->v.y = 100.0 / 100;
 
     box2->boundaries.count = 1;
     box2->boundaries.list = new Boundary * [1];
@@ -220,6 +220,29 @@ void Application::game() {
     box2->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
         return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100 /*- 0.005 * m *v_y*/);
     };
+
+//    auto * box3 = new DynamicObject(
+//            [] (float x, float y) {
+//                ST7735_FillRectangle(x, y, 10,10,WHITE);
+//            },
+//            [] (float x, float y) {
+                 //TODO fill only coordinates, for scene to re render background for example
+//                ST7735_FillRectangle(x, y, 10,10,BLACK);
+//            },
+//            [] (Boundaries& boundaries, Vector& s) {
+//                ((CircleBoundary *) boundaries.list[0])->r = 5;
+//                ((CircleBoundary *) boundaries.list[0])->x = s.x + 5;
+//                ((CircleBoundary *) boundaries.list[0])->y = s.y + 5;
+//            },
+//            80,80);
+
+//    box3->boundaries.count = 1;
+//    box3->boundaries.list = new Boundary * [1];
+//    box3->boundaries.list[0] = new CircleBoundary();
+//    box3->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
+//        return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100 /*- 0.005 * m *v_y*/);
+//    };
+    //scene->addDrawable(box3);
 
     scene->addDrawable(box1);
     scene->addDrawable(box2);
