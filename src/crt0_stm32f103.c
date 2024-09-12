@@ -1,3 +1,5 @@
+#include "stdint.h"
+
 _Noreturn void Default_Handler(void) {
     while(1) __asm__ volatile("nop");
 }
@@ -58,7 +60,7 @@ void USBWakeUp_IRQHandler (void) __attribute__ ((weak, alias("Default_Handler"))
 
 /* Exported types --------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-extern unsigned long _etext;
+//extern unsigned long _etext;
 extern unsigned long _sidata;		/* start address for the initialization values of the .data section. defined in linker script */
 extern unsigned long _sdata;		/* start address for the .data section. defined in linker script */
 extern unsigned long _edata;		/* end address for the .data section. defined in linker script */
@@ -67,6 +69,13 @@ extern unsigned long _sbss;			/* start address for the .bss section. defined in 
 extern unsigned long _ebss;			/* end address for the .bss section. defined in linker script */
 
 extern void _estack;		/* init value for the stack pointer. defined in linker script */
+
+extern void (*__preinit_array_start []) (void) __attribute__((weak));
+extern void (*__preinit_array_end []) (void) __attribute__((weak));
+extern void (*__init_array_start []) (void) __attribute__((weak));
+extern void (*__init_array_end []) (void) __attribute__((weak));
+//extern void (*__fini_array_start []) (void) __attribute__((weak));
+//extern void (*__fini_array_end []) (void) __attribute__((weak));
 
 
 
@@ -148,24 +157,27 @@ void Reset_Handler(void)
 {
 //    SystemInit();
 
-    unsigned long *pulSrc, *pulDest;
-
-    //
-    // Copy the data segment initializers from flash to SRAM.
-    //
-    pulSrc = &_sidata;
-    for(pulDest = &_sdata; pulDest < &_edata; )
-    {
-        *(pulDest++) = *(pulSrc++);
+    // Copy initialized data from Flash to RAM
+    for (uint32_t *src = &_sidata, *dst = &_sdata; dst < &_edata; ) {
+        *dst++ = *src++;
     }
 
-    //
-    // Zero fill the bss segment.
-    //
-    for(pulDest = &_sbss; pulDest < &_ebss; )
-    {
-        *(pulDest++) = 0;
+    // Zero initialize the .bss section
+    for (uint32_t *dst = &_sbss; dst < &_ebss; ) {
+        *dst++ = 0;
     }
+
+    /* Iterate over all the init routines.  */
+    int count;
+    int i;
+
+    count = __preinit_array_end - __preinit_array_start;
+    for (i = 0; i < count; i++)
+        __preinit_array_start[i] ();
+
+    count = __init_array_end - __init_array_start;
+    for (i = 0; i < count; i++)
+        __init_array_start[i] ();
 
     //
     // Call the application's entry point.

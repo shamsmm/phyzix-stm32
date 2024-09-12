@@ -34,6 +34,8 @@ ASMFLAGS=-ggdb -mthumb -mcpu=cortex-m3
 flash: $(TARGET)
 	openocd -f stlink.cfg -c "program $(TARGET) verify reset exit"
 
+build: $(TARGET)
+
 $(TARGET): $(OBJ)
 	$(PP) $(CFLAGS) -nostartfiles -Tstm32f103.ld -o $(TARGET) $(addprefix $(BINDIR)/, $(OBJ))
 
