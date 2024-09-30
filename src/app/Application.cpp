@@ -15,7 +15,7 @@ void handle_physics(Scene * scene, float dt) {
     for (size_t i = 0; i < scene->drawableCount; ++i) {
         auto I = scene->drawables[i];
 
-        if (auto * it = dynamic_cast<DynamicObject*>(I)) {
+        if (auto * it = I->getId() == ClassId::DYNAMIC_OBJECT ? (DynamicObject*)(I) : nullptr) {
             it->s = it->s + it->v * dt;
             it->v = it->v + it->a * dt;
             it->updateBoundaryFunction(it->boundaries, it->s);
@@ -35,7 +35,7 @@ void handle_physics(Scene * scene, float dt) {
 
             for (size_t j = i + 1; j < scene->drawableCount; ++j) {
                 auto J = scene->drawables[j];
-                if (auto * other = dynamic_cast<DynamicObject*>(J)) {
+                if (auto * other = J->getId() == ClassId::DYNAMIC_OBJECT ? (DynamicObject*)(J) : nullptr) {
                     auto object_collision = Boundary::intersects(it->boundaries, other->boundaries);
                     if (object_collision.intersected) {
                         it->s = it->s + object_collision.normal * 1;
@@ -68,7 +68,7 @@ void handle_physics(Scene * scene, float dt) {
                         other->v = object_collision.normal * v2_n + object_collision.normal.getPerpendicular() * v2_p;
                     }
                 }
-                else if (auto * other_s = dynamic_cast<StaticObject*>(J)) {
+                else if (auto * other_s = J->getId() == ClassId::STATIC_OBJECT ? (StaticObject*)(J) : nullptr) {
                     auto object_collision = Boundary::intersects(it->boundaries, other_s->boundaries);
                     if (object_collision.intersected) {
                         it->s = it->s + object_collision.normal * 1;
@@ -80,10 +80,10 @@ void handle_physics(Scene * scene, float dt) {
                 }
             }
         }
-        else if (auto * it_s = dynamic_cast<StaticObject*>(I)) {
+        else if (auto * it_s = I->getId() == ClassId::STATIC_OBJECT ? (StaticObject*)(I) : nullptr) {
             for (size_t j = i + 1; j < scene->drawableCount; ++j) {
                 auto J = scene->drawables[j];
-                if (auto * other = dynamic_cast<DynamicObject*>(J)) {
+                if (auto * other = J->getId() == ClassId::DYNAMIC_OBJECT ? (DynamicObject*)(J) : nullptr) {
                     auto object_collision = Boundary::intersects(other->boundaries, it_s->boundaries);
                     if (object_collision.intersected) {
                         other->s = other->s + object_collision.normal * 1;
@@ -125,7 +125,7 @@ void Application::render() {
 
             scene->forEachDrawable([] (Drawable * d) {
                 OS_TASK_LOCK();
-                if (auto * object = dynamic_cast<DynamicObject *>(d)) {
+                if (auto * object = d->getId() == ClassId::DYNAMIC_OBJECT ? (DynamicObject *)(d) : nullptr) {
                     object->blackOut();
 
 
@@ -144,6 +144,16 @@ void Application::render() {
 
         os_schedule();
     }
+}
+
+Vector basic_force(float x, float y, float v_x, float v_y, float m) {
+    return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100);
+}
+
+void boundary_update(Boundaries& boundaries, Vector& s) {
+    ((CircleBoundary *) boundaries.list[0])->r = 12.5f;
+    ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5f;
+    ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5f;
 }
 
 void Application::game() {
@@ -182,19 +192,13 @@ void Application::game() {
                 // TODO fill only coordinates, for scene to re render background for example
                 ST7735_FillRectangle(x, y, 25,25,BLACK);
             },
-            [] (Boundaries& boundaries, Vector& s) {
-                ((CircleBoundary *) boundaries.list[0])->r = 12.5f;
-                ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5f;
-                ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5f;
-            },
+            boundary_update,
             100,120);
 
     box1->boundaries.count = 1;
     box1->boundaries.list = new Boundary * [1];
     box1->boundaries.list[0] = new CircleBoundary();
-    box1->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
-        return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100);
-    };
+    box1->forceFunction = basic_force;
 
     auto * box2 = new DynamicObject(
             [] (float x, float y) {
@@ -204,11 +208,7 @@ void Application::game() {
                 // TODO fill only coordinates, for scene to re render background for example
                 ST7735_FillRectangle(x, y, 25,25,BLACK);
             },
-            [] (Boundaries& boundaries, Vector& s) {
-                ((CircleBoundary *) boundaries.list[0])->r = 12.5f;
-                ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5f;
-                ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5f;
-            },
+            boundary_update,
             20,120);
 
     box2->v.x = 100.0 / 100;
@@ -217,9 +217,7 @@ void Application::game() {
     box2->boundaries.count = 1;
     box2->boundaries.list = new Boundary * [1];
     box2->boundaries.list[0] = new CircleBoundary();
-    box2->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
-        return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100 /*- 0.005 * m *v_y*/);
-    };
+    box2->forceFunction = basic_force;
 
 //    auto * box3 = new DynamicObject(
 //            [] (float x, float y) {
@@ -246,16 +244,6 @@ void Application::game() {
 
     scene->addDrawable(box1);
     scene->addDrawable(box2);
-
-    auto * s2 = new StaticObject([] {
-        ST7735_FillRectangle(128 - 50, 0, 50,50,MAGENTA);
-    });
-
-    s2->boundaries.count = 1;
-    s2->boundaries.list = new Boundary * [1];
-    s2->boundaries.list[0] = new LineSegmentBoundary(128 - 50, 50, 128, 50);
-
-    scene->addDrawable(s2);
 
     OS_TASK_UNLOCK();
 

@@ -1,5 +1,3 @@
-#include <stdint.h>
-#include <stdio.h>
 #include "os.h"
 #include "os_conf.h"
 #include "system/system.h"

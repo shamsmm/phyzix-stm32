@@ -11,7 +11,7 @@
 #include "Boundary.h"
 #include "Vector.h"
 
-class DynamicObject : public Drawable{
+class DynamicObject : public Drawable, public ClassIdentifiable {
 public:
     float prev_x = 0;
     float prev_y = 0;
@@ -24,6 +24,10 @@ public:
     Vector (*forceFunction)(float, float, float, float, float){};
 
     float zIndex = 0;
+
+    ClassId getId() const override {
+        return ClassId::DYNAMIC_OBJECT;
+    }
 
     // Constructor takes a callable to implement the draw method
     DynamicObject(

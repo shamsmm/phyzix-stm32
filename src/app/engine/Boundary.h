@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include "Vector.h"
+#include "app/lib/class_id.h"
 
 class Boundary;
 
@@ -23,9 +24,13 @@ struct BoundaryIntersectionResult {
     Boundary * other;
 };
 
-class Boundary{
+class Boundary: public ClassIdentifiable {
 public:
     float e = 0.8;
+
+    ClassId getId() const override {
+        return ClassId::BOUNDARY;
+    }
 
     virtual BoundaryIntersectionResult intersects(Boundary * other) = 0;
 

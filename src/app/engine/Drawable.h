@@ -6,8 +6,14 @@
 #define PHYZIX_DRAWABLE_H
 
 
-class Drawable {
+#include "app/lib/class_id.h"
+
+class Drawable: public ClassIdentifiable {
 public:
+    ClassId getId() const override {
+        return ClassId::DRAWABLE;
+    }
+
     virtual void draw() const = 0;
 };
 

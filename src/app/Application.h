@@ -10,8 +10,10 @@
 #include "os/os.h"
 #include "app/engine/StaticObject.h"
 #include "lcd_st7735/lcd.h"
+#include "app/lib/class_id.h"
 
-class Application {
+
+class Application: public ClassIdentifiable {
 private:
     static Scene * scene;
     static Camera * camera;
@@ -26,6 +28,10 @@ private:
 public:
     static uint32_t last_tick;
     static uint32_t last_render_tick;
+
+    ClassId getId() const override {
+        return ClassId::APPLICATION;
+    }
 
     static Application& getInstance() {
         static Application instance; // Guaranteed to be destroyed.

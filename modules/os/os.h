@@ -1,6 +1,8 @@
 #ifndef C0_OS_H
 #define C0_OS_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

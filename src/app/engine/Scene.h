@@ -7,7 +7,7 @@
 
 
 #include <cstdint>
-#include <cstdio>
+#include <stddef.h>
 #include <algorithm>
 #include "Drawable.h"
 #include "Boundary.h"
