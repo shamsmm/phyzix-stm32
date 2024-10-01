@@ -151,11 +151,26 @@ Vector basic_force(float x, float y, float v_x, float v_y, float m) {
     return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100);
 }
 
-void boundary_update(Boundaries& boundaries, Vector& s) {
-    ((CircleBoundary *) boundaries.list[0])->r = 12.5f;
-    ((CircleBoundary *) boundaries.list[0])->x = s.x + 12.5f;
-    ((CircleBoundary *) boundaries.list[0])->y = s.y + 12.5f;
-}
+#define INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(ptr, w, h, initial_x, initial_y, color) do { \
+ptr = new DynamicObject(\
+    [] (float x, float y) {\
+        ST7735_FillRectangle(x, y, w,h,color);\
+    },\
+    [] (float x, float y) {\
+        ST7735_FillRectangle(x, y, w,h,BLACK);\
+    },\
+    [] (Boundaries& boundaries, Vector& s) {\
+        ((CircleBoundary *) boundaries.list[0])->r = h / 2.0f;\
+        ((CircleBoundary *) boundaries.list[0])->x = s.x + w / 2.0f;\
+        ((CircleBoundary *) boundaries.list[0])->y = s.y + h / 2.0f;\
+    },\
+initial_x,initial_y);\
+ptr->boundaries.count = 1;\
+ptr->boundaries.list = new Boundary * [1];\
+ptr->boundaries.list[0] = new CircleBoundary();\
+ptr->forceFunction = basic_force;\
+ptr->updateBoundaryFunction(box1->boundaries, box1->s);\
+} while(0)
 
 void Application::game() {
     OS_TASK_LOCK();
@@ -185,74 +200,31 @@ void Application::game() {
 
     scene->addDrawable(s1);
 
-    int m1 = peak_memory();
+    DynamicObject * box1, * box2, * box3, * box4, * box5, * box6, * box7, * box8, * box9, * box10;
+    INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(box1, 25, 25, 20, 90, RED);
+    INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(box2, 10, 10, 20, 40, WHITE);
+    INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(box3, 25, 25, 80, 20, RED);
+    INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(box4, 13, 13, 110, 20, GREEN);
+    INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(box5, 25, 25, 80, 20, WHITE);
+    INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(box6, 25, 25, 80, 120, MAGENTA);
+    INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(box7, 25, 25, 80, 70, BLUE);
+    INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(box8, 25, 25, 80, 90, WHITE);
+    INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(box9, 25, 25, 80, 20, YELLOW);
+    INIT_DYNAMIC_BOX_SIMPLE_BOUNDARY(box10, 60, 60, 80, 20, YELLOW);
 
-    auto * box1 = new DynamicObject(
-            [] (float x, float y) {
-                ST7735_FillRectangle(x, y, 25,25,BLUE);
-            },
-            [] (float x, float y) {
-                // TODO fill only coordinates, for scene to re render background for example
-                ST7735_FillRectangle(x, y, 25,25,BLACK);
-            },
-            boundary_update,
-            100,120);
 
-    int m2 = peak_memory();
 
-    box1->boundaries.count = 1;
-    box1->boundaries.list = new Boundary * [1];
-    box1->boundaries.list[0] = new CircleBoundary();
-    box1->forceFunction = basic_force;
-    box1->updateBoundaryFunction(box1->boundaries, box1->s);
-
-    auto * box2 = new DynamicObject(
-            [] (float x, float y) {
-                ST7735_FillRectangle(x, y, 25,25,RED);
-            },
-            [] (float x, float y) {
-                // TODO fill only coordinates, for scene to re render background for example
-                ST7735_FillRectangle(x, y, 25,25,BLACK);
-            },
-            boundary_update,
-            20,120);
-
-    int m3 = peak_memory();
-
-    box2->v.x = 100.0 / 100;
-    box2->v.y = 100.0 / 100;
-
-    box2->boundaries.count = 1;
-    box2->boundaries.list = new Boundary * [1];
-    box2->boundaries.list[0] = new CircleBoundary();
-    box2->forceFunction = basic_force;
-    box2->updateBoundaryFunction(box2->boundaries, box2->s);
-
-    auto * box3 = new DynamicObject(
-            [] (float x, float y) {
-                ST7735_FillRectangle(x, y, 10,10,WHITE);
-            },
-            [] (float x, float y) {
-                 //TODO fill only coordinates, for scene to re render background for example
-                ST7735_FillRectangle(x, y, 10,10,BLACK);
-            },
-            [] (Boundaries& boundaries, Vector& s) {
-                ((CircleBoundary *) boundaries.list[0])->r = 5;
-                ((CircleBoundary *) boundaries.list[0])->x = s.x + 5;
-                ((CircleBoundary *) boundaries.list[0])->y = s.y + 5;
-            },
-            80,80);
-
-    box3->boundaries.count = 1;
-    box3->boundaries.list = new Boundary * [1];
-    box3->boundaries.list[0] = new CircleBoundary();
-    box3->forceFunction = [](float x, float y, float v_x, float v_y, float m) -> Vector {
-        return Vector(0, -9.81 * m * 8 * 1 / 100 * 1 / 100 /*- 0.005 * m *v_y*/);
-    };
-    scene->addDrawable(box3);
 
     scene->addDrawable(box1);
     scene->addDrawable(box2);
+    scene->addDrawable(box3);
+    scene->addDrawable(box4);
+    scene->addDrawable(box5);
+    scene->addDrawable(box6);
+    scene->addDrawable(box7);
+    scene->addDrawable(box8);
+    scene->addDrawable(box9);
+    scene->addDrawable(box10);
 
     OS_TASK_UNLOCK();
 
