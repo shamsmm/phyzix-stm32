@@ -12,3 +12,16 @@ This repository might have many branches as some templates or some scratch code 
 
 ## Code Comments
 I have commented every line of code I could comment on, and for sure will keep adding documentation, references and much more to any code that I write, I don't want anybody to go through the painful process of debugging and to commit pitfalls that I personally did before.
+
+## How to use
+```bash
+make
+```
+
+```bash
+make MODE=test
+```
+
+```bash
+linkermapviz < build/output.map
+```

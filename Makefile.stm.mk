@@ -27,12 +27,14 @@ BINDIR = build
 
 TARGET = $(BINDIR)/phyzix.elf
 
-CFLAGS=-ggdb -Wl,-Map=$(BINDIR)/output.map -ffunction-sections -fdata-sections -Wl,--gc-sections -mthumb -mcpu=cortex-m3 -O0 -ffreestanding $(INCLUDES)
-CPPFLAGS=-lstdc++
+CFLAGS=-ggdb -Wl,-Map=$(BINDIR)/output.map -ffunction-sections -fdata-sections -Wl,--gc-sections -mthumb -mcpu=cortex-m3 -O0 -nostdlib -nodefaultlibs -nostartfiles -ffreestanding $(INCLUDES)
+CPPFLAGS=-fno-rtti -fno-exceptions
 ASMFLAGS=-ggdb -mthumb -mcpu=cortex-m3
 
 flash: $(TARGET)
 	openocd -f stlink.cfg -c "program $(TARGET) verify reset exit"
+
+build: $(TARGET)
 
 $(TARGET): $(OBJ)
 	$(PP) $(CFLAGS) -nostartfiles -Tstm32f103.ld -o $(TARGET) $(addprefix $(BINDIR)/, $(OBJ))

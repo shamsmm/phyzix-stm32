@@ -1,5 +1,4 @@
 #include "lcd.h"
-#include <stdint.h>
 #include <stddef.h>
 #include "../gpio/gpio.h"
 #include "../timer/systick.h"

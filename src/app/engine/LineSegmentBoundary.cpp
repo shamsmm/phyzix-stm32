@@ -8,8 +8,8 @@
 #include "BoundaryCalculations.h"
 
 BoundaryIntersectionResult LineSegmentBoundary::intersects(Boundary *o) {
-    if (dynamic_cast<LineSegmentBoundary*>(o)) {
-        auto other = dynamic_cast<LineSegmentBoundary*>(o);
+    if (o->getId() == ClassId::LINE_SEGMENT_BOUNDARY) {
+        auto other = (LineSegmentBoundary*)(o);
 
         double A1 = y2 - y1;
         double B1 = x1 - x2;
@@ -20,8 +20,8 @@ BoundaryIntersectionResult LineSegmentBoundary::intersects(Boundary *o) {
         if (A1 * B2 - A2 * B1 != 0) {
             // TODO: implement the intersection of two line segments
         }
-    } else if ( dynamic_cast<CircleBoundary *>(o) ) {
-        auto other = dynamic_cast<CircleBoundary *>(o);
+    } else if (o->getId() == ClassId::CIRCLE_BOUNDARY) {
+        auto other = (CircleBoundary *)(o);
         return BoundaryCalculations::intersects(this, other);
     }
 

@@ -1,30 +1,31 @@
 ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
-_estack = ORIGIN(RAM) + LENGTH(RAM);	/* end of "RAM" Ram type memory */
+_estack = 0x20004FFF;    /* end of RAM */
 
-_Min_Heap_Size = 0x800;	/* required amount of heap  */
-_Min_Stack_Size = 0xA00;	/* required amount of stack */
+/* Generate a link error if heap and stack don't fit into RAM */
+_Min_Heap_Size = 0xF00;      /* required amount of heap  */
+_Min_Stack_Size = 0x400; /* required amount of stack */
 
-/* Memories definition */
+/* Specify the memory areas */
 MEMORY
 {
-  RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 20K
-  ROM    (rx)    : ORIGIN = 0x8000000,   LENGTH = 128K
+FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 128K
+RAM (xrw)       : ORIGIN = 0x20000000, LENGTH = 20K
 }
 
-/* Sections */
+/* Define output sections */
 SECTIONS
 {
-  /* The startup code into "ROM" Rom type memory */
+  /* The startup code goes first into FLASH */
   .isr_vector :
   {
     . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
-  } >ROM
+  } >FLASH
 
-  /* The program code and other data into "ROM" Rom type memory */
+  /* The program code and other data goes into FLASH */
   .text :
   {
     . = ALIGN(4);
@@ -39,64 +40,49 @@ SECTIONS
 
     . = ALIGN(4);
     _etext = .;        /* define a global symbols at end of code */
-  } >ROM
+  } >FLASH
 
-  /* Constant data into "ROM" Rom type memory */
+  /* Constant data goes into FLASH */
   .rodata :
   {
     . = ALIGN(4);
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
     . = ALIGN(4);
-  } >ROM
+  } >FLASH
 
-  .ARM.extab   : {
-    . = ALIGN(4);
-    *(.ARM.extab* .gnu.linkonce.armextab.*)
-    . = ALIGN(4);
-  } >ROM
-
+  .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH
   .ARM : {
-    . = ALIGN(4);
     __exidx_start = .;
     *(.ARM.exidx*)
     __exidx_end = .;
-    . = ALIGN(4);
-  } >ROM
+  } >FLASH
 
   .preinit_array     :
   {
-    . = ALIGN(4);
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array*))
     PROVIDE_HIDDEN (__preinit_array_end = .);
-    . = ALIGN(4);
-  } >ROM
-
+  } >FLASH
   .init_array :
   {
-    . = ALIGN(4);
     PROVIDE_HIDDEN (__init_array_start = .);
     KEEP (*(SORT(.init_array.*)))
     KEEP (*(.init_array*))
     PROVIDE_HIDDEN (__init_array_end = .);
-    . = ALIGN(4);
-  } >ROM
-
+  } >FLASH
   .fini_array :
   {
-    . = ALIGN(4);
     PROVIDE_HIDDEN (__fini_array_start = .);
     KEEP (*(SORT(.fini_array.*)))
     KEEP (*(.fini_array*))
     PROVIDE_HIDDEN (__fini_array_end = .);
-    . = ALIGN(4);
-  } >ROM
+  } >FLASH
 
-  /* Used by the startup to initialize data */
+  /* used by the startup to initialize data */
   _sidata = LOADADDR(.data);
 
-  /* Initialized data sections into "RAM" Ram type memory */
+  /* Initialized data sections goes into RAM, load LMA copy after code */
   .data :
   {
     . = ALIGN(4);
@@ -106,10 +92,10 @@ SECTIONS
 
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
+  } >RAM AT> FLASH
 
-  } >RAM AT> ROM
 
-  /* Uninitialized data section into "RAM" Ram type memory */
+  /* Uninitialized data section */
   . = ALIGN(4);
   .bss :
   {
@@ -125,7 +111,7 @@ SECTIONS
     __bss_end__ = _ebss;
   } >RAM
 
-  /* User_heap_stack section, used to check that there is enough "RAM" Ram  type memory left */
+  /* User_heap_stack section, used to check that there is enough RAM left */
   ._user_heap_stack :
   {
     . = ALIGN(8);
@@ -136,7 +122,9 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
-  /* Remove information from the compiler libraries */
+
+
+  /* Remove information from the standard libraries */
   /DISCARD/ :
   {
     libc.a ( * )

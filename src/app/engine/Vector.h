@@ -7,7 +7,7 @@
 
 
 #include "app/math/Math.h"
-#include <cstdio>
+#include "app/lib/printf.h"
 
 class Vector {
 public:

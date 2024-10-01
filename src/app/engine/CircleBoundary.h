@@ -15,6 +15,10 @@ public:
     float y;
     float r;
 
+    ClassId getId() const override {
+        return ClassId::CIRCLE_BOUNDARY;
+    }
+
     CircleBoundary(float x, float y, float r): x(x), y(y), r(r) {}
     CircleBoundary() {}
 
