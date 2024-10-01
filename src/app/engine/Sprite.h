@@ -10,7 +10,7 @@
 #include "DynamicObject.h"
 #include "Drawable.h"
 
-class Sprite : public DynamicObject, public Drawable {
+class Sprite : public DynamicObject {
 private:
     uint16_t x_size;
     uint16_t y_size;

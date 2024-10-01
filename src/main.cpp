@@ -9,6 +9,7 @@
 #include "main.h"
 #include "spi/spi.h"
 #include "app/Application.h"
+#include "app/lib/malloc.h"
 
 uint32_t update_task_stack[0x200];
 uint32_t render_task_stack[0x200];
@@ -17,6 +18,8 @@ uint32_t game_task_stack[0x200];
 void App_Configure_Hardware();
 
 int main() {
+    malloc_init();
+
     App_Configure_Hardware();
     printf("Hardware configured successfully.\n");
 

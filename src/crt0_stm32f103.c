@@ -68,7 +68,7 @@ extern unsigned long _edata;		/* end address for the .data section. defined in l
 extern unsigned long _sbss;			/* start address for the .bss section. defined in linker script */
 extern unsigned long _ebss;			/* end address for the .bss section. defined in linker script */
 
-extern void _estack;		/* init value for the stack pointer. defined in linker script */
+extern uint32_t _estack[];		/* init value for the stack pointer. defined in linker script */
 
 extern void (*__preinit_array_start []) (void) __attribute__((weak));
 extern void (*__preinit_array_end []) (void) __attribute__((weak));
@@ -87,7 +87,7 @@ extern int main(void);
 __attribute__ ((section(".isr_vector")))
 void (* const g_pfnVectors[])(void) =
 {
-  &_estack,            // The initial stack pointer
+  (void (*)(void)) &_estack,            // The initial stack pointer
   Reset_Handler,             // The reset handler
   NMIException,
   HardFaultException,

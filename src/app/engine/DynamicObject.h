@@ -10,8 +10,10 @@
 #include "Drawable.h"
 #include "Boundary.h"
 #include "Vector.h"
+#include "app/lib/class_id.h"
+#include "app/lib/malloc.h"
 
-class DynamicObject : public Drawable, public ClassIdentifiable {
+class DynamicObject : public Drawable {
 public:
     float prev_x = 0;
     float prev_y = 0;
@@ -25,7 +27,7 @@ public:
 
     float zIndex = 0;
 
-    ClassId getId() const override {
+    [[nodiscard]] ClassId getId() const override {
         return ClassId::DYNAMIC_OBJECT;
     }
 
@@ -38,7 +40,6 @@ public:
             float y
     )
     : drawFunction(drawFunction), blackOutFunction(blackOutFunction), updateBoundaryFunction(boundaryUpdateFunction), s(Vector(x, y)) {
-        this->updateBoundaryFunction(boundaries, s);
     }
 
     // Override the draw method from the base class

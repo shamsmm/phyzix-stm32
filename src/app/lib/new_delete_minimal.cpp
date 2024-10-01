@@ -2,46 +2,69 @@
 #include <cstdint>
 
 typedef struct {
-    unsigned int size: 30,
+    unsigned int size: 30, // size in bytes
                  free: 1,
                  last: 1;
 } block_header_t;
 
-void * malloc(size_t size) {
-    extern uint32_t end[];
-    static block_header_t * head;
+[[maybe_unused]] extern uint32_t end[];
+static uint8_t * heap_start;
 
-    // Initialize the heap
-    if (head == nullptr) {
-        head = (block_header_t *) &end;
-        *head = {0, 0, 1};
+void malloc_init() {
+    heap_start = (uint8_t *) &end;
+
+    auto * header = (block_header_t *) heap_start;
+    header->size = 0;
+    header->free = 0;
+    header->last = 1;
+}
+
+/// Total used memory, including possible fragmented free memory
+unsigned int peak_memory() {
+    auto * current_heap_ptr = (uint8_t *) &end;
+
+    while (!((block_header_t *) current_heap_ptr)->last) {
+        current_heap_ptr += sizeof(block_header_t) + ((block_header_t *) current_heap_ptr)->size;
     }
 
-    block_header_t * current_header_ptr = head;
+    return current_heap_ptr - heap_start + sizeof(block_header_t) + ((block_header_t *) current_heap_ptr)->size;
+}
+
+void * malloc(size_t size) {
+    // Initialize the heap
+    if (heap_start == nullptr) {
+        malloc_init();
+    }
+
+    auto * current_heap_ptr = (uint8_t *) &end;
 
     // Find a free block
-    while (!current_header_ptr->last) {
-        if (current_header_ptr->free && current_header_ptr->size >= size) {
-            current_header_ptr->free = 0;
-            return current_header_ptr + sizeof(block_header_t);
+    while (!((block_header_t *) current_heap_ptr)->last) {
+        if (((block_header_t *) current_heap_ptr)->free && ((block_header_t *) current_heap_ptr)->size >= size) {
+            ((block_header_t *) current_heap_ptr)->free = 0;
+            return current_heap_ptr + sizeof(block_header_t);
         }
 
-        current_header_ptr += current_header_ptr->size + sizeof(block_header_t);
+        current_heap_ptr += sizeof(block_header_t) + ((block_header_t *) current_heap_ptr)->size;
     }
 
-    // Allocate a new block
-    current_header_ptr->last = 0;
-    block_header_t * new_block = current_header_ptr + current_header_ptr->size + sizeof(block_header_t);
+    // change last block to not be last
+    ((block_header_t *) current_heap_ptr)->last = 0;
 
+    // increment current heap pointer to new space
+        current_heap_ptr += sizeof(block_header_t) + ((block_header_t *) current_heap_ptr)->size;
+
+    // Allocate a new block
+    auto * new_block = (block_header_t *) current_heap_ptr;
     new_block->size = size;
     new_block->free = 0;
     new_block->last = 1;
 
-    return new_block + sizeof(block_header_t);
+    return current_heap_ptr + sizeof(block_header_t);
 }
 
 void free(void* ptr) {
-    block_header_t * block = (block_header_t *) ptr - sizeof(block_header_t);
+    auto block = (block_header_t *)((uint8_t *) ptr - sizeof(block_header_t));
     block->free = 1;
 }
 

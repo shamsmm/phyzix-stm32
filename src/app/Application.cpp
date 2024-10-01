@@ -5,6 +5,7 @@
 #include "app/engine/LineSegmentBoundary.h"
 #include "app/engine/CircleBoundary.h"
 #include "app/math/Math.h"
+#include "app/lib/malloc.h"
 
 Scene * Application::scene;
 Camera * Application::camera;
@@ -184,6 +185,8 @@ void Application::game() {
 
     scene->addDrawable(s1);
 
+    int m1 = peak_memory();
+
     auto * box1 = new DynamicObject(
             [] (float x, float y) {
                 ST7735_FillRectangle(x, y, 25,25,BLUE);
@@ -195,10 +198,13 @@ void Application::game() {
             boundary_update,
             100,120);
 
+    int m2 = peak_memory();
+
     box1->boundaries.count = 1;
     box1->boundaries.list = new Boundary * [1];
     box1->boundaries.list[0] = new CircleBoundary();
     box1->forceFunction = basic_force;
+    box1->updateBoundaryFunction(box1->boundaries, box1->s);
 
     auto * box2 = new DynamicObject(
             [] (float x, float y) {
@@ -211,6 +217,8 @@ void Application::game() {
             boundary_update,
             20,120);
 
+    int m3 = peak_memory();
+
     box2->v.x = 100.0 / 100;
     box2->v.y = 100.0 / 100;
 
@@ -218,6 +226,7 @@ void Application::game() {
     box2->boundaries.list = new Boundary * [1];
     box2->boundaries.list[0] = new CircleBoundary();
     box2->forceFunction = basic_force;
+    box2->updateBoundaryFunction(box2->boundaries, box2->s);
 
 //    auto * box3 = new DynamicObject(
 //            [] (float x, float y) {
