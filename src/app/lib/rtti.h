@@ -6,7 +6,7 @@
 #define PHYZIX_RTTI_H
 
 /**
- * @enum RuntimeBaseType
+ * @class RuntimeBaseType
  * @brief Enum class to identify the base type of a class for runtime type identification
  * @details This enum class is used to identify the base type of a classes that inherit from RuntimeBaseTypeIdentifiable in runtime
  * @see RuntimeBaseTypeIdentifiable
