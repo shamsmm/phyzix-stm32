@@ -5,11 +5,21 @@
 #ifndef PHYZIX_MATH_H
 #define PHYZIX_MATH_H
 
-
+/**
+ * @class Math
+ * @brief A class that provides light-weight mathematical functions
+ * @note This class is not intended to be used for heavy mathematical calculations, it only approximates the values.
+ */
 class Math{
 public:
-    static constexpr float PI = 3.141592653589793;
+    static constexpr float PI = 3.141592653589793; /**< The approximated value of PI */
 
+    /**
+     * @brief exponentiation
+     * @param base
+     * @param exponent
+     * @return the base raised to the exponent
+     */
     static float pow(float base, int exponent) {
         float result = 1;
 
@@ -23,30 +33,69 @@ public:
         return result;
     }
 
+    /**
+     * @brief get minimum float value
+     * @param a
+     * @param b
+     * @return the minimum value
+     */
     static float min(float a, float b) {
         return a > b ? b : a;
     }
 
+    /**
+     * @brief get minimum integer value
+     * @param a
+     * @param b
+     * @return the minimum value
+     */
     static int min(int a, int b) {
         return a > b ? b : a;
     }
 
+    /**
+     * @brief get maximum float value
+     * @param a
+     * @param b
+     * @return the maximum value
+     */
     static float max(float a, float b) {
         return a > b ? a : b;
     }
 
+    /**
+     * @brief get maximum integer value
+     * @param a
+     * @param b
+     * @return the maximum value
+     */
     static int max(int a, int b) {
         return a > b ? a : b;
     }
 
+    /**
+     * @brief get the floating-point absolute value
+     * @param n
+     * @return absolute value
+     */
     static float fabs(float n) {
         return n < 0 ? -n : n;
     }
 
+    /**
+     * @brief get integer absolute value
+     * @param n
+     * @return absolute value
+     */
     static int abs(int n) {
         return n < 0 ? -n : n;
     }
 
+    /**
+     * @brief get the square root of the number
+     * @param n
+     * @return the approximated square root
+     */
     static float sqrt(float n) {
         if (n == 0) return 0;
 
@@ -62,6 +111,11 @@ public:
         return x;
     }
 
+    /**
+     * @brief get the cosine of the angle
+     * @param angle the angle in radians
+     * @return approximated value between 1 and -1
+     */
     static float cos(float angle) {
         angle = fabs(angle);
         while (angle >= 2 * PI)
@@ -76,18 +130,41 @@ public:
         return cosine[(int) (0.5 + 500 * angle / (2 * PI))];
     }
 
+    /**
+     * @brief get the sign of number
+     * @param x
+     * @return 1 or -1
+     */
     static int sign(float x) {
         return x >= 0 ? 1 : -1;
     }
 
+    /**
+     * @brief get the sine of the angle
+     * @param angle the angle in radians
+     * @return approximated value between 1 and -1
+     */
     static float sin(float angle) {
         return cos(angle - PI/2);
     }
 
+    /**
+     * @brief get the arc tangent of a ratio
+     * if slope approaches infinity @see atan(float y, float x)
+     * @param m the ratio or slope
+     * @return approximated angle value in radians, between pi/2 and -pi/2 inclusive.
+     */
     static float atan(float m) {
         return sign(m) * arctan[min(int(abs(m * (500 / 10)) + 0.5), 499)];
     }
 
+    /**
+     * @brief get the arc tangent of the ratio constructed by the y amount and the x amount
+     * if @p x is zero, the result is exactly pi/2, if x will never be zero, use atan(float m)
+     * @param y
+     * @param x
+     * @return approximated angle value in radians, between pi/2 and -pi/2 inclusive.
+     */
     static float atan(float y, float x) {
         if (x == 0)
             return PI/2;
@@ -597,7 +674,7 @@ private:
             0.9992894726405892,
             0.9996841892832999,
             0.9999210442038161,
-    };
+    }; /**< The approximated cosine values for angles between 0 and 2pi */
 
     static constexpr float arctan[500] = {
             0.0,
@@ -1100,7 +1177,7 @@ private:
             1.4705300648131245,
             1.4707300600105733,
             1.4709292616079255,
-    };
+    }; /**< The approximated arctan values for slopes between 0 and 10 */
 };
 
 

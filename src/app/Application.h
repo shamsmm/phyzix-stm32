@@ -15,8 +15,8 @@
 
 class Application: public ClassIdentifiable {
 private:
-    static Scene * scene;
-    static Camera * camera;
+    static Scene * scene; /**< The current `Scene` displayed in the `Application` */
+    static Camera * camera; /**< The current `Camera` used to show only some portion of the `Scene` */
 
     Application() {
         scene = nullptr;
@@ -42,10 +42,19 @@ public:
     Application(Application const&) = delete;
     void operator = (Application const&) = delete;
 
+    /**
+     * @brief This function should run in a separate thread, be scheduled every small time increments to update dynamic objects
+     * */
     [[noreturn]] static void update();
 
+    /**
+     * @brief This function should run in a separate thread, be scheduled whenever display should show a new frame or update the frame
+     * */
     [[noreturn]] static void render();
 
+    /**
+     * @brief This function should run in a separate thread, be scheduled whenever scene changes, starts and so
+     * */
     [[noreturn]] static void game();
 };
 
