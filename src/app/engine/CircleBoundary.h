@@ -15,8 +15,8 @@ public:
     float y;
     float r;
 
-    ClassId getId() const override {
-        return ClassId::CIRCLE_BOUNDARY;
+    RuntimeBaseType getBaseType() const override {
+        return RuntimeBaseType::CIRCLE_BOUNDARY;
     }
 
     CircleBoundary(float x, float y, float r): x(x), y(y), r(r) {}

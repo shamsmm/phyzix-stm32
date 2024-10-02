@@ -10,10 +10,14 @@
 #include "os/os.h"
 #include "app/engine/StaticObject.h"
 #include "lcd_st7735/lcd.h"
-#include "app/lib/class_id.h"
+#include "app/lib/rtti.h"
 
 
-class Application: public ClassIdentifiable {
+/**
+ * @class Application
+ * @brief This class is the main class of the application, it is a singleton class that manages the game loop, the scene, the camera and the rendering
+ */
+class Application: public RuntimeBaseTypeIdentifiable {
 private:
     static Scene * scene; /**< The current `Scene` displayed in the `Application` */
     static Camera * camera; /**< The current `Camera` used to show only some portion of the `Scene` */
@@ -29,8 +33,8 @@ public:
     static uint32_t last_tick;
     static uint32_t last_render_tick;
 
-    ClassId getId() const override {
-        return ClassId::APPLICATION;
+    RuntimeBaseType getBaseType() const override {
+        return RuntimeBaseType::APPLICATION;
     }
 
     static Application& getInstance() {

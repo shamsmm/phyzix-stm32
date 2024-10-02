@@ -16,7 +16,7 @@ void handle_physics(Scene * scene, float dt) {
     for (size_t i = 0; i < scene->drawableCount; ++i) {
         auto I = scene->drawables[i];
 
-        if (auto * it = I->getId() == ClassId::DYNAMIC_OBJECT ? (DynamicObject*)(I) : nullptr) {
+        if (auto * it = I->getBaseType() == RuntimeBaseType::DYNAMIC_OBJECT ? (DynamicObject*)(I) : nullptr) {
             it->s = it->s + it->v * dt;
             it->v = it->v + it->a * dt;
             it->updateBoundaryFunction(it->boundaries, it->s);
@@ -36,7 +36,7 @@ void handle_physics(Scene * scene, float dt) {
 
             for (size_t j = i + 1; j < scene->drawableCount; ++j) {
                 auto J = scene->drawables[j];
-                if (auto * other = J->getId() == ClassId::DYNAMIC_OBJECT ? (DynamicObject*)(J) : nullptr) {
+                if (auto * other = J->getBaseType() == RuntimeBaseType::DYNAMIC_OBJECT ? (DynamicObject*)(J) : nullptr) {
                     auto object_collision = Boundary::intersects(it->boundaries, other->boundaries);
                     if (object_collision.intersected) {
                         it->s = it->s + object_collision.normal * 1;
@@ -69,7 +69,7 @@ void handle_physics(Scene * scene, float dt) {
                         other->v = object_collision.normal * v2_n + object_collision.normal.getPerpendicular() * v2_p;
                     }
                 }
-                else if (auto * other_s = J->getId() == ClassId::STATIC_OBJECT ? (StaticObject*)(J) : nullptr) {
+                else if (auto * other_s = J->getBaseType() == RuntimeBaseType::STATIC_OBJECT ? (StaticObject*)(J) : nullptr) {
                     auto object_collision = Boundary::intersects(it->boundaries, other_s->boundaries);
                     if (object_collision.intersected) {
                         it->s = it->s + object_collision.normal * 1;
@@ -81,10 +81,10 @@ void handle_physics(Scene * scene, float dt) {
                 }
             }
         }
-        else if (auto * it_s = I->getId() == ClassId::STATIC_OBJECT ? (StaticObject*)(I) : nullptr) {
+        else if (auto * it_s = I->getBaseType() == RuntimeBaseType::STATIC_OBJECT ? (StaticObject*)(I) : nullptr) {
             for (size_t j = i + 1; j < scene->drawableCount; ++j) {
                 auto J = scene->drawables[j];
-                if (auto * other = J->getId() == ClassId::DYNAMIC_OBJECT ? (DynamicObject*)(J) : nullptr) {
+                if (auto * other = J->getBaseType() == RuntimeBaseType::DYNAMIC_OBJECT ? (DynamicObject*)(J) : nullptr) {
                     auto object_collision = Boundary::intersects(other->boundaries, it_s->boundaries);
                     if (object_collision.intersected) {
                         other->s = other->s + object_collision.normal * 1;
@@ -126,7 +126,7 @@ void Application::render() {
 
             scene->forEachDrawable([] (Drawable * d) {
                 OS_TASK_LOCK();
-                if (auto * object = d->getId() == ClassId::DYNAMIC_OBJECT ? (DynamicObject *)(d) : nullptr) {
+                if (auto * object = d->getBaseType() == RuntimeBaseType::DYNAMIC_OBJECT ? (DynamicObject *)(d) : nullptr) {
                     object->blackOut();
 
 

@@ -10,7 +10,7 @@
 #include "Drawable.h"
 #include "Boundary.h"
 #include "Vector.h"
-#include "app/lib/class_id.h"
+#include "app/lib/rtti.h"
 #include "app/lib/malloc.h"
 
 class DynamicObject : public Drawable {
@@ -27,8 +27,8 @@ public:
 
     float zIndex = 0;
 
-    [[nodiscard]] ClassId getId() const override {
-        return ClassId::DYNAMIC_OBJECT;
+    [[nodiscard]] RuntimeBaseType getBaseType() const override {
+        return RuntimeBaseType::DYNAMIC_OBJECT;
     }
 
     // Constructor takes a callable to implement the draw method

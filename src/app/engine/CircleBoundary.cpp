@@ -8,14 +8,14 @@
 #include "BoundaryCalculations.h"
 
 BoundaryIntersectionResult CircleBoundary::intersects(Boundary *o) {
-    if (o->getId() == ClassId::CIRCLE_BOUNDARY) {
+    if (o->getBaseType() == RuntimeBaseType::CIRCLE_BOUNDARY) {
         auto * other = (CircleBoundary *) o;
 
         if(Math::pow(this->x - other->x, 2) + Math::pow(this->y - other->y, 2) < Math::pow(this->r + other->r, 2)) {
             // Intersects
             return {true, Vector(this->x - other->x, this->y - other->y).getNormal(), this, o };
         }
-    } else if (o->getId() == ClassId::LINE_SEGMENT_BOUNDARY) {
+    } else if (o->getBaseType() == RuntimeBaseType::LINE_SEGMENT_BOUNDARY) {
         auto * other = (LineSegmentBoundary *)(o);
         return BoundaryCalculations::intersects(other, this, true);
     }

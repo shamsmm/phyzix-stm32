@@ -13,8 +13,8 @@ public:
     float zIndex = 0;
     Boundaries boundaries;
 
-    ClassId getId() const override {
-        return ClassId::STATIC_OBJECT;
+    RuntimeBaseType getBaseType() const override {
+        return RuntimeBaseType::STATIC_OBJECT;
     }
 
     // Constructor takes a callable to implement the draw method

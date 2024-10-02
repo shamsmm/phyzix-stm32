@@ -6,12 +6,12 @@
 #define PHYZIX_DRAWABLE_H
 
 
-#include "app/lib/class_id.h"
+#include "app/lib/rtti.h"
 
-class Drawable: public ClassIdentifiable {
+class Drawable: public RuntimeBaseTypeIdentifiable {
 public:
-    ClassId getId() const override {
-        return ClassId::DRAWABLE;
+    RuntimeBaseType getBaseType() const override {
+        return RuntimeBaseType::DRAWABLE;
     }
 
     virtual void draw() const = 0;

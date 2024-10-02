@@ -8,7 +8,7 @@
 
 #include <cstdint>
 #include "Vector.h"
-#include "app/lib/class_id.h"
+#include "app/lib/rtti.h"
 
 class Boundary;
 
@@ -24,12 +24,12 @@ struct BoundaryIntersectionResult {
     Boundary * other;
 };
 
-class Boundary: public ClassIdentifiable {
+class Boundary: public RuntimeBaseTypeIdentifiable {
 public:
     float e = 0.8;
 
-    ClassId getId() const override {
-        return ClassId::BOUNDARY;
+    RuntimeBaseType getBaseType() const override {
+        return RuntimeBaseType::BOUNDARY;
     }
 
     virtual BoundaryIntersectionResult intersects(Boundary * other) = 0;
