@@ -5,8 +5,20 @@
 #ifndef PHYZIX_BOUNDARYCALCULATIONS_H
 #define PHYZIX_BOUNDARYCALCULATIONS_H
 
+/**
+ * @class BoundaryCalculations
+ * @brief A class that contains static methods for common calculating intersections between boundaries
+ */
 class BoundaryCalculations {
 public:
+    /**
+     * @brief Check if a ::LineSegmentBoundary and a ::CircleBoundary intersect or not
+     * @param line the line boundary
+     * @param circle the circle boundary
+     * @param flip whether to flip the order of the boundaries in the ::BoundaryIntersectionResult
+     * @return the BoundaryIntersectionResult
+     * @note This method is to be referenced twice once in the ::LineSegmentBoundary class and once in the ::CircleBoundary class
+     */
     static BoundaryIntersectionResult intersects(LineSegmentBoundary * line, CircleBoundary * circle, bool flip = false) {
         double A = line->y2 - line->y1;
         double B = line->x1 - line->x2;
