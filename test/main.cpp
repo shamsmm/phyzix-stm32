@@ -106,6 +106,12 @@ void vector_tests() {
 
     Vector c = {0, -1};
     assert(ALMOST_EQUALS(c.getDirection(), 270 * 2 * Math::PI/360));
+
+    Vector *v1 = new Vector(2, 4);
+    Vector *v2 = new Vector(3, -1);
+
+    assert(Vector::cross(v1, v2) == -14);
+    assert(Vector::dot(v1, v2) == 2);
 }
 
 void boundary_tests() {
@@ -156,5 +162,13 @@ void boundary_tests() {
     assert(b->intersects(scene->boundaries.list[2]).intersected);
     assert(b->intersects(scene->boundaries.list[2]).normal.getDirection() == Math::PI);
     assert(!b->intersects(scene->boundaries.list[3]).intersected);
+
+    LineSegmentBoundary* l1 = new LineSegmentBoundary(1, 1, 4, 4);
+    LineSegmentBoundary* l2 = new LineSegmentBoundary(5, 5, 8, 8);
+
+    assert(l1->getLengthSquared() == 18);
+    assert(LineSegmentBoundary::pointOnLine(l1, 2.001, 2));
+
+    BoundaryIntersectionResult intersection = l1->intersects(l2);
 
 }

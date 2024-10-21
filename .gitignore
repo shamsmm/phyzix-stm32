@@ -2,3 +2,4 @@ build
 .idea
 linkermap.html
 html
+.vscode/*
